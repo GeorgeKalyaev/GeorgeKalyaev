@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PostgreSQL load testing: data model fix (benchmarks &amp; planning horizon)</title>
+  <style>
+    :root {
+      --text: #1a1a1a;
+      --muted: #4a4a4a;
+      --border: #d8d8d8;
+      --accent: #1e5a7a;
+      --table-head: #e8eef2;
+      --row-alt: #fafbfc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", system-ui, Georgia, "Times New Roman", serif;
+      font-size: 17px;
+      max-width: 42rem;
+      margin: 2rem auto 3rem;
+      padding: 0 1.25rem;
+      line-height: 1.6;
+      color: var(--text);
+      text-rendering: optimizeLegibility;
+    }
+    h1 {
+      font-size: clamp(1.35rem, 4vw, 1.75rem);
+      line-height: 1.28;
+      margin: 0 0 0.75rem;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+    .meta { color: var(--muted); font-size: 0.92rem; margin-bottom: 1.25rem; }
+    h2 {
+      font-size: 1.15rem;
+      margin: 2rem 0 0.65rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--border);
+      scroll-margin-top: 1rem;
+    }
+    p { margin: 0.7rem 0; }
+    ul, ol { margin: 0.5rem 0; padding-left: 1.35rem; }
+    li { margin: 0.35rem 0; }
+    pre, code {
+      font-family: ui-monospace, Consolas, "Segoe UI Mono", monospace;
+      font-size: 0.82rem;
+    }
+    code { background: #f0f2f4; padding: 0.12em 0.35em; border-radius: 4px; }
+    pre {
+      background: #f4f4f4;
+      padding: 1rem;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    pre code { background: none; padding: 0; }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; }
+    table.data {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 0.92rem;
+    }
+    table.data caption {
+      caption-side: top;
+      text-align: left;
+      font-size: 0.88rem;
+      color: var(--muted);
+      padding-bottom: 0.5rem;
+    }
+    table.data th, table.data td {
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.65rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    table.data thead th { background: var(--table-head); font-weight: 600; }
+    table.data tbody tr:nth-child(even) { background: var(--row-alt); }
+    .note {
+      border-left: 4px solid var(--accent);
+      padding: 0.65rem 0 0.65rem 1rem;
+      margin: 1rem 0;
+      color: #333;
+      background: #fafafa;
+      border-radius: 0 6px 6px 0;
+    }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0 1rem; }
+    .tags { font-size: 0.88rem; color: #666; }
+    @media print {
+      body { margin: 0; font-size: 11pt; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>Throughput degraded near ~100M rows: resolved by changing the data model, not by replacing PostgreSQL</h1>
+<p class="meta"><strong>Note:</strong> Table and index names are anonymized.</p>
+
+<h2>Symptom</h2>
+<p>During load testing, degradation appeared earlier than projected. As data volume grew, creating a business object involving a <strong>bulk insert of approximately 110k rows</strong> moved from an acceptable range to <strong>tens of seconds</strong>. API latency increased, <strong>SLA</strong> for the create endpoint was no longer met, and under concurrent database load (prolonged IO, WAL, background work) <strong>5xx</strong> responses were observed.</p>
+<p>The superficial explanation is “PostgreSQL is slow.” The underlying cause was different: the bottleneck lay in storage and indexing design, not in the engine itself as a generic limitation.</p>
+
+<h2>Observations in PostgreSQL</h2>
+<p>When throughput degraded, <code>pg_stat_activity</code> showed a consistent pattern: the session spent time on <strong>disk I/O</strong> rather than waiting on locks. Typical indicators:</p>
+<ul>
+  <li><code>wait_event_type = IO</code>, often <code>DataFileRead</code></li>
+  <li><code>EXPLAIN (ANALYZE, BUFFERS)</code> with increasing <code>Buffers: ... read=...</code> as data volume grew</li>
+</ul>
+<p>In other words, the system read index and heap pages from storage because <strong>the working set no longer fit comfortably in the buffer cache</strong>. This was not evidence of an incorrect query in isolation; it reflected working-set size relative to available memory.</p>
+
+<h2>Root cause (scaling with data volume)</h2>
+<p>The original design consolidated <strong>all historical links</strong> in one structure. Each bulk insert incurred three overlapping cost factors:</p>
+<ol>
+  <li><strong>A surrogate primary key</strong> on a random UUID - additional index maintenance per row.</li>
+  <li><strong>A separate uniqueness path</strong> for the natural key <code>(period_id, agreement_id)</code> - another large B-tree to probe and update.</li>
+  <li><strong>A single global index</strong> over full history - each batch incurred cost proportional to <strong>current index size</strong>, not only to batch size.</li>
+</ol>
+<p><code>ON CONFLICT DO NOTHING</code> is logically simple but not cost-free at scale. In our case, <strong>insert cost tracked index size</strong>.</p>
+<p>Principal conclusion: the constraint was <strong>index structure and growth</strong>, not an inability of PostgreSQL to perform high-throughput inserts.</p>
+
+<h2>Changes (requirements and storage architecture)</h2>
+<p>Two aspects applied together.</p>
+<p><strong>Business requirements:</strong> a period cannot exist without agreements. A surrogate row identifier was no longer aligned with the domain model.</p>
+<p><strong>Storage changes:</strong></p>
+<ul>
+  <li>discontinue reliance on the surrogate key as the primary identifier;</li>
+  <li>define the primary key as <code>(period_id, agreement_id)</code> so uniqueness and identity match the domain;</li>
+  <li><strong>partition</strong> the table so current load operates against <strong>smaller physical indexes</strong> rather than one unbounded global tree.</li>
+</ul>
+<p>Application logic remained the same (uniqueness checks, bulk insert), but the <strong>hot path touches a bounded portion of the index</strong> instead of a monolith over full history.</p>
+
+<h2>Verification (stepwise experiments)</h2>
+<p>We used a measured approach: stepwise data growth and repetition of the same insert scenario at each stage.</p>
+<p>Checkpoints: <strong>0 rows</strong>, then <strong>50M / 100M / 150M / 200M</strong> (and higher volumes in stress runs).</p>
+<p>At each stage we recorded row counts (<code>count(*)</code>), table and index sizes (<code>pg_total_relation_size</code>, per-index sizes), and a reference ~110k-row insert inside <code>BEGIN</code> / <code>ROLLBACK</code>:</p>
+<pre>begin;
+
+explain (analyze, buffers)
+with p as (
+  insert into periods
+    (created_at, created_by, reason, scope_key, agreements_count)
+  values
+    (current_date, 'perf_test', 'probe', 'probe', 110437)
+  returning id
+)
+insert into period_agreements
+  (period_id, agreement_id)
+select
+  (select id from p),
+  gen_random_uuid()
+from generate_series(1, 110437)
+on conflict do nothing;
+
+rollback;</pre>
+<p>We also examined <code>pg_stat_activity</code> during API traffic to align <strong>wait events</strong> with user-visible latency.</p>
+<div class="note">
+  <p><strong>Measurement methodology:</strong> <code>EXPLAIN ANALYZE</code> adds overhead and may observe a colder cache than steady production; repeated API calls benefit from warm cache. We used the benchmark as a <strong>comparable indicator across dataset sizes</strong>, not as a guarantee of production wall-clock time. Results were cross-checked with observed waits (<code>DataFileRead</code>) and end-to-end application latency.</p>
+</div>
+
+<h2>Before and after (measured results)</h2>
+<div class="table-wrap">
+<table class="data">
+  <caption>Summary comparison (same ~110k-row probe where applicable; laboratory / benchmark context)</caption>
+  <thead>
+    <tr>
+      <th scope="col">Aspect</th>
+      <th scope="col">Before redesign</th>
+      <th scope="col">After redesign</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">Primary access / identity</th>
+      <td>Surrogate UUID PK; separate uniqueness on <code>(period_id, agreement_id)</code></td>
+      <td>Composite PK <code>(period_id, agreement_id)</code></td>
+    </tr>
+    <tr>
+      <th scope="row">Index scope</th>
+      <td>Global structure over full history</td>
+      <td>Partitioned table; smaller per-partition indexes</td>
+    </tr>
+    <tr>
+      <th scope="row">Bulk insert (~110k rows)</th>
+      <td>Tens of seconds (roughly <strong>~20-80s</strong> in our runs)</td>
+      <td>~<strong>1.0-1.3s</strong> on large dataset stages</td>
+    </tr>
+    <tr>
+      <th scope="row">Buffer reads (order of magnitude)</th>
+      <td>Worst cases: <strong>tens of thousands</strong> of 8KB pages (hundreds of MB from disk, cold cache)</td>
+      <td>~<strong>10-20 pages</strong> in recorded runs (hot path largely in memory)</td>
+    </tr>
+    <tr>
+      <th scope="row">SLA pressure vs size (lab)</th>
+      <td>Aligned with stress near <strong>~80-120M</strong> rows</td>
+      <td>Latency not driven by “age” of full table; ~<strong>20×</strong> improvement on benchmark (indicative)</td>
+    </tr>
+    <tr>
+      <th scope="row">Stress ceiling observed</th>
+      <td>-</td>
+      <td>~<strong>2.5B</strong> rows; run stopped due to <strong>free disk space</strong>, not CPU or new algorithmic limit</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>Before (large monolithic indexes, surrogate key path):</strong></p>
+<ul>
+  <li>bulk insert duration in the <strong>tens of seconds</strong> at scale; in our runs roughly <strong>~20-80s</strong> depending on cache state and contention;</li>
+  <li>near <strong>~80-120M</strong> rows, SLA pressure matched laboratory observations;</li>
+  <li>in worst cases, <code>EXPLAIN</code> showed <strong>large buffer reads</strong> on the order of <strong>tens of thousands of 8KB pages</strong>, i.e. <strong>hundreds of MB read from disk per execution</strong> with a cold cache.</li>
+</ul>
+<p><strong>After (composite PK, partitioning):</strong></p>
+<ul>
+  <li>the same <strong>~110k-row</strong> probe stabilized near <strong>~1.0-1.3s</strong> on large stages;</li>
+  <li><strong>Buffers read</strong> fell to a small, stable band (on the order of <strong>~10-20 pages</strong> in our records), indicating the hot path was largely served from memory;</li>
+  <li>in an extended stress run, approximately <strong>~2.5 billion rows</strong> were loaded with stable insert latency; the run stopped because <strong>free disk space was exhausted</strong>, not because the DBMS ran out of CPU or hit a newly discovered algorithmic limit.</li>
+</ul>
+<p>Approximately <strong>~20×</strong> on that benchmark; more important than the ratio is that <strong>performance ceased to track the age of the full table</strong>.</p>
+
+<h2>Operational snapshot (post-change)</h2>
+<div class="table-wrap">
+<table class="data">
+  <caption>Post-change benchmark insert vs row count and approximate storage</caption>
+  <thead>
+    <tr><th scope="col">Rows</th><th scope="col">Storage (approx.)</th><th scope="col">Insert time (benchmark)</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>50M</td><td>~6.8 GB</td><td>~1.14s</td></tr>
+    <tr><td>100M</td><td>~14 GB</td><td>~1.31s</td></tr>
+    <tr><td>150M</td><td>~21 GB</td><td>~1.15s</td></tr>
+    <tr><td>200M</td><td>~28 GB</td><td>~1.18s</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Under mixed load in long runs, metrics remained within acceptable bounds: for reference, <strong>~49 RPS</strong> system-wide, <strong>~4 RPS</strong> on the insert-heavy endpoint, <strong>~3s</strong> average response; <strong>SLA held</strong> until external infrastructure limits applied.</p>
+
+<h2>Long-term assessment: forecast vs outcome</h2>
+<div class="table-wrap">
+<table class="data">
+  <caption>Growth and planning horizon (order-of-magnitude)</caption>
+  <thead>
+    <tr>
+      <th scope="col">Item</th>
+      <th scope="col">Value / note</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><th scope="row">Assumed growth</th><td>~<strong>200k</strong> new rows per day  ->  ~<strong>73M</strong> rows per year (365×), on top of existing volume</td></tr>
+    <tr><th scope="row">Lab degradation band (old design)</th><td>~<strong>80-120M</strong> rows: tens of seconds per bulk insert, SLA risk</td></tr>
+    <tr><th scope="row">Horizon (old design)</th><td>Order of <strong>~one year</strong> to enter critical band from tens of millions of rows baseline (indicative)</td></tr>
+    <tr><th scope="row">Horizon (new design)</th><td><strong>Multi-year</strong> for this failure mode, subject to retention, partition ops, capacity</td></tr>
+    <tr><th scope="row">Stress test stopping condition</th><td><strong>Disk full</strong>; CPU not exhausted</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Beyond symptom removal, we required a <strong>planning horizon</strong> that product and operations could use.</p>
+<p><strong>Original design:</strong> growth on the order of <strong>~200k rows per day</strong> (approximately <strong>200k × 365 ≈ 73 million rows per year</strong> on top of existing volume) and a laboratory degradation band near <strong>~80-120M rows</strong> (tens of seconds per bulk insert, SLA risk) implies, <strong>order of magnitude</strong>, entry into that band in <strong>roughly one year</strong> when starting from tens of millions of rows. Without structural change, that maps to <strong>recurring incidents</strong> (timeouts, degraded endpoint availability, increased operational load).</p>
+<p><strong>New design:</strong> with composite PK and partitioning, the same insert pattern remained ~1s-class into billions of rows. The risk removed was not “purchase hardware next quarter” but <strong>insert cost scaling with total historical index size</strong>. For this failure mode, the system is viable on a <strong>multi-year</strong> horizon subject to retention policy, partition maintenance, and capacity planning.</p>
+<p><strong>Stress test limit:</strong> the longest run ended when <strong>free space on the volume was exhausted</strong>. PostgreSQL retained CPU headroom; no new algorithmic ceiling was observed. The desired relationship of limits is: <strong>disk quota is reached before the database exhausts its ability to accept inserts</strong>.</p>
+
+<h2>Practical takeaways</h2>
+<ul>
+  <li>“The database is slow” often reflects <strong>index growth across full history</strong>, not a shortcoming of PostgreSQL as a product.</li>
+  <li>Wait events and buffer reads help distinguish <strong>I/O</strong>-bound behavior from other causes.</li>
+  <li>If each insert expands a single global index, hardware expansion without model change is typically a <strong>tactical mitigation</strong>, not root-cause resolution.</li>
+</ul>
+
+<h2>Conclusion</h2>
+<p>The issue was identified during <strong>load testing</strong>, which reduces risk to production compared with discovery only after deployment.</p>
+<p>PostgreSQL was not the defect.<br>
+The core issue was <strong>insert cost coupled to the size of historical indexes</strong>. After breaking that coupling through <strong>domain-aligned keys and partitioning</strong>, the same workload remained performant at large data volume. Key planning figures: <strong>approximately one year to critical degradation</strong> under the old schema versus <strong>multi-year runway</strong> under the new for this class of constraint; in the lab, <strong>disk space</strong> was exhausted before database throughput became the limiting factor.</p>
+
+<hr>
+<p class="tags">Hashtags: #PostgreSQL #DatabaseDesign #PerformanceEngineering #Scalability #LoadTesting #Backend #SoftwareArchitecture</p>
+
+</body>
+</html>

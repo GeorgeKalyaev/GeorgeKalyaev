@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tuning Linux for a Load Generator: limits, sysctl, and verification</title>
+  <style>
+    :root {
+      --text: #1a1a1a;
+      --muted: #555;
+      --border: #ddd;
+      --code-bg: #f4f4f5;
+      --placeholder-bg: #f0f4f8;
+      --accent: #0a66c2;
+    }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--text);
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 3rem;
+    }
+    h1 {
+      font-size: 1.75rem;
+      line-height: 1.25;
+      margin-top: 0;
+      color: #111;
+    }
+    h2 {
+      font-size: 1.25rem;
+      margin-top: 2rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--border);
+      color: #222;
+    }
+    p { margin: 0.85rem 0; }
+    ul, ol { margin: 0.75rem 0; padding-left: 1.35rem; }
+    li { margin: 0.35rem 0; }
+    strong { font-weight: 600; }
+    code, pre {
+      font-family: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+      font-size: 0.9em;
+    }
+    code {
+      background: var(--code-bg);
+      padding: 0.12em 0.35em;
+      border-radius: 4px;
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.1rem;
+      overflow-x: auto;
+      line-height: 1.45;
+      margin: 1rem 0;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+    .figure-slot {
+      margin: 1.25rem 0;
+      padding: 1rem 1.25rem;
+      background: var(--placeholder-bg);
+      border: 2px dashed #aac;
+      border-radius: 8px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .figure-slot strong { color: var(--accent); }
+    figure.article-figure {
+      margin: 1.5rem 0;
+    }
+    figure.article-figure img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    figcaption {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+    .note {
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Tuning Linux for a Load Generator: limits, sysctl, and verification</h1>
+
+  <p><strong>Audience:</strong> performance testers, SRE, and DevOps engineers running Gatling, JMeter, k6, or similar tools at high concurrency.</p>
+
+  <p><strong>Purpose:</strong> with many concurrent connections, the bottleneck is often the OS (file descriptors, ephemeral ports, TCP queues, buffers), not only the system under test. This article lists what to change, how to apply settings, and how to verify them.</p>
+
+  <hr />
+
+  <h2>Baseline environment</h2>
+  <p>Reference VM profile from a typical deployment guide: <strong>16 GB RAM</strong>, <strong>8 CPUs</strong>, <strong>Ubuntu Server LTS</strong>.</p>
+  <p>OS tuning does not replace JVM tuning, test scripts, or connection pooling, but it removes common limits on the load generator host.</p>
+
+  <hr />
+
+  <h2>Step 1. Open file limit (<code>limits.conf</code>)</h2>
+  <p>On Linux, a TCP connection consumes a file descriptor. Default limits (often around 1000) are usually too low for a load generator: under peak load you may see <code>Too many open files</code> and distorted test results.</p>
+  <p>Edit <strong><code>/etc/security/limits.conf</code></strong> (for example <code>sudo nano /etc/security/limits.conf</code>). Before the <strong><code># End of file</code></strong> line, add:</p>
+
+  <pre><code>*               soft    nofile          65535
+*               hard    nofile          65535</code></pre>
+
+  <p><strong>Fields:</strong></p>
+  <ul>
+    <li><strong><code>*</code></strong>: all users (replace with the account that runs the load test if required).</li>
+    <li><strong><code>soft</code></strong>: default soft limit for descriptors.</li>
+    <li><strong><code>hard</code></strong>: hard ceiling; cannot exceed this value.</li>
+    <li><strong><code>nofile</code></strong>: max open files, including sockets.</li>
+  </ul>
+  <p>In nano: save with <strong>Ctrl+O</strong>, exit with <strong>Ctrl+X</strong>.</p>
+
+  <div class="figure-slot">
+    <strong>Figure 1</strong><br />
+    <code>nano</code> editing <code>/etc/security/limits.conf</code>, lines <code>* soft/hard nofile 65535</code>.
+  </div>
+
+  <hr />
+
+  <h2>Step 2. Network and TCP parameters (<code>sysctl.conf</code>)</h2>
+  <p>Add to <strong><code>/etc/sysctl.conf</code></strong> or, preferably for maintenance, to <strong><code>/etc/sysctl.d/99-loadgen.conf</code></strong>:</p>
+
+  <pre><code>net.ipv4.tcp_max_syn_backlog = 40000
+net.core.somaxconn = 40000
+net.core.wmem_default = 8388608
+net.core.rmem_default = 8388608
+net.ipv4.tcp_sack = 1
+net.ipv4.tcp_window_scaling = 1
+net.ipv4.tcp_fin_timeout = 15
+net.ipv4.tcp_keepalive_intvl = 30
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_moderate_rcvbuf = 1
+net.core.rmem_max = 134217728
+net.core.wmem_max = 134217728
+net.ipv4.tcp_mem = 134217728 134217728 134217728
+net.ipv4.tcp_rmem = 4096 277750 134217728
+net.ipv4.tcp_wmem = 4096 277750 134217728
+net.core.netdev_max_backlog = 300000</code></pre>
+
+  <p><strong>Parameter roles:</strong></p>
+  <ul>
+    <li><strong><code>tcp_max_syn_backlog</code></strong>: half-open SYN queue on the interface.</li>
+    <li><strong><code>somaxconn</code></strong>: backlog of connections waiting for <code>accept</code> on listening sockets.</li>
+    <li><strong><code>wmem_default</code> / <code>rmem_default</code></strong>: default send and receive buffer sizes (8 MB here).</li>
+    <li><strong><code>tcp_sack</code></strong>: TCP selective acknowledgments.</li>
+    <li><strong><code>tcp_window_scaling</code></strong>: TCP window scaling for high bandwidth-delay product paths.</li>
+    <li><strong><code>tcp_fin_timeout</code></strong>: shorter hold time when many connections close.</li>
+    <li><strong><code>tcp_keepalive_intvl</code></strong>: interval between keepalive probes.</li>
+    <li><strong><code>tcp_tw_reuse</code></strong>: reuse of sockets in TIME_WAIT for new outbound connections. Often acceptable on a generator client with short-lived sessions; on application servers, validate against kernel version and security policy.</li>
+    <li><strong><code>tcp_moderate_rcvbuf</code></strong>: receive buffer autotuning for TCP.</li>
+    <li><strong><code>rmem_max</code> / <code>wmem_max</code></strong>: buffer ceilings (up to 128 MB here).</li>
+    <li><strong><code>tcp_mem</code></strong>: three TCP memory thresholds (min, pressure, max). Values are in <strong>memory pages</strong>, not bytes; align with installed RAM.</li>
+    <li><strong><code>tcp_rmem</code> / <code>tcp_wmem</code></strong>: min, default, and max TCP receive and send buffer sizes.</li>
+    <li><strong><code>netdev_max_backlog</code></strong>: ingress packet queue when the stack cannot drain fast enough.</li>
+  </ul>
+
+  <p>For outbound connections, set the ephemeral port range explicitly:</p>
+
+  <pre><code>net.ipv4.ip_local_port_range = 10000 65535</code></pre>
+
+  <p>This reduces the risk of local port exhaustion when many connections target the same remote IP and port. All generator hosts in an environment should use the same range; otherwise runs are not comparable.</p>
+
+  <div class="figure-slot">
+    <strong>Figure 2</strong><br />
+    <code>nano</code> editing <code>/etc/sysctl.conf</code>, <code>net.*</code> block.
+  </div>
+
+  <hr />
+
+  <h2>Step 3. Apply settings and re-login</h2>
+  <ol>
+    <li>Run <strong><code>sudo sysctl -p</code></strong>.</li>
+    <li>End the SSH session (<code>exit</code>) and log in again as the same user that will run the load test.</li>
+  </ol>
+  <p><code>limits.conf</code> is applied on login (PAM). An existing session may keep old limits. <code>sysctl</code> values take effect immediately after <code>sysctl -p</code>.</p>
+  <p>If the load tool runs as a <strong>systemd</strong> service, set <strong><code>LimitNOFILE=</code></strong> in the unit file: interactive shell limits and service limits can differ.</p>
+
+  <hr />
+
+  <h2>Step 4. Verification</h2>
+  <p>After logging in again:</p>
+
+  <pre><code>ulimit -a
+cat /proc/sys/net/ipv4/ip_local_port_range
+grep -v '^#' /etc/sysctl.conf | grep '^net.'</code></pre>
+
+  <p><strong>Expected results:</strong></p>
+  <ul>
+    <li><strong><code>open files (-n)</code></strong>: <strong>65535</strong> (or your agreed value).</li>
+    <li><strong><code>ip_local_port_range</code></strong>: the configured range, for example <code>10000 65535</code>.</li>
+    <li>The third command lists active <strong><code>net.*</code></strong> lines for configuration audit.</li>
+  </ul>
+
+  <div class="figure-slot">
+    <strong>Figure 3</strong><br />
+    Host <code>load-generator02</code>: output of <code>ulimit -a</code>, <code>ip_local_port_range</code>, and <code>grep</code> on <code>sysctl.conf</code>.
+  </div>
+
+  <div class="figure-slot">
+    <strong>Figure 4</strong><br />
+    Host <code>load-generator01</code>: <code>ulimit -a</code> excerpt showing <code>open files (-n): 65535</code>.
+  </div>
+
+  <div class="figure-slot">
+    <strong>Figure 5</strong><br />
+    Host <code>load-generator01</code>: <code>cat /proc/sys/net/ipv4/ip_local_port_range</code> showing <code>32768 60999</code> (example of a narrow default range before alignment).
+  </div>
+
+  <hr />
+
+  <h2>Common signs the generator is the limit</h2>
+  <ul>
+    <li>Connection errors and timeouts on the generator while the target stays lightly loaded.</li>
+    <li><code>Too many open files</code> in the load driver logs.</li>
+    <li><code>Cannot assign requested address</code> with a narrow <code>ip_local_port_range</code> and high concurrency to one remote socket.</li>
+    <li>Flat RPS with low utilization on the application under test.</li>
+  </ul>
+  <p>Triage order: limits, ports, network queues, and generator metrics (CPU, RAM, disk), then the SUT profile.</p>
+
+  <hr />
+
+  <h2>Constraints and risks</h2>
+  <ol>
+    <li><strong><code>tcp_mem</code></strong>, <strong><code>rmem_max</code></strong>, <strong><code>wmem_max</code></strong>: align with real memory and traffic; do not copy values from another VM without recalculation.</li>
+    <li><strong><code>tcp_tw_reuse</code></strong>: evaluated differently on application servers than on a generator client.</li>
+    <li>All generators in one environment should share the same <code>limits</code>, <code>sysctl</code>, and port range; otherwise results are not comparable.</li>
+  </ol>
+
+  <hr />
+
+  <h2>Pre-run checklist</h2>
+  <ul>
+    <li><strong><code>limits.conf</code></strong>: <strong><code>nofile</code></strong> soft and hard for the correct user or <code>*</code>.</li>
+    <li><strong><code>sysctl</code></strong>: full <strong><code>net.*</code></strong> set plus <strong><code>ip_local_port_range</code></strong> if required.</li>
+    <li><strong><code>sysctl -p</code></strong> executed and SSH session restarted.</li>
+    <li><strong><code>ulimit -a</code></strong>: <strong><code>open files</code></strong> matches the target.</li>
+    <li><strong><code>ip_local_port_range</code></strong> identical on every generator host.</li>
+    <li>For <strong>systemd</strong>: <strong><code>LimitNOFILE</code></strong> checked when the load process is not started from an interactive shell.</li>
+  </ul>
+
+  <hr />
+
+  <h2>Conclusion</h2>
+  <p>Configuring <code>limits.conf</code> and <code>sysctl</code>, re-logging, and checking <code>ulimit</code> and <code>ip_local_port_range</code> gives a reproducible baseline for load tests. After that, tune the scenario, JVM, network path to the target, and the service under test.</p>
+
+  <p class="note">Figures: replace the figure slots (1-5) with <code>figure</code>/<code>img</code> tags or upload images in your publishing tool.</p>
+
+</body>
+</html>

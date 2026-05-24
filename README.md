@@ -22,7 +22,7 @@ My focus is **performance engineering end-to-end**: workload modelling and **NFR
 
 At **IBS** I was **senior performance engineer** and **led a load-testing team of ~5 engineers** — planning, mentoring, technical interviews, and release-cycle performance gates — on embedded engagements at major banks, insurers, e-commerce, commodity exchange, and government clients.
 
-Currently at **First Asset Management** (Russian asset management; very similar to **Vanguard**) as **Principal Development Engineer (load testing)**: **15+ microservices** (REST API), **Kangal + JMeter on Kubernetes**, **PostgreSQL capacity planning** (100M+ rows), and internal **Python** tooling in **GitLab CI**.
+Currently at **First Asset Management** (Russian asset management; very similar to **Vanguard**) as **Principal Development Engineer (load testing)**: **introduced Kangal + JMeter on Kubernetes**, **load-tested 15+ REST microservices** in release cycles (on-demand injectors, worker scaling, teardown — **no idle load hardware between campaigns**), **PostgreSQL capacity planning** (100M+ rows), and internal **Python** tooling in **GitLab CI**.
 
 ---
 
@@ -32,22 +32,22 @@ Outcomes and **root-cause findings** from load campaigns — **most significant 
 
 | Area | Outcome |
 |------|---------|
-| **PostgreSQL / capacity** (First Asset Management) | 5 experimental growth models (0→100M+ rows); **~90%** forecast accuracy for degradation and SLA horizon; **INSERT** degradation up to **8.3×**; SLA risk **~11 months**; **proposed table partitioning** and index changes to the team — after implementation **20–70 s → ~1 s** (validated up to **2B** rows) |
+| **PostgreSQL / capacity** (First Asset Management) | 5 growth models (0→100M+ rows, **~19 GB / ~12 GB indexes**); **~90%** forecast accuracy; **INSERT** up to **8.3×**; SLA risk **~11 months**; **proposed table partitioning** — dev team implemented — **20–70 s → ~1 s** (validated to **2B** rows) |
+| **K8s / Kangal** (First Asset Management) | **Introduced and standardised** Kangal + JMeter on Kubernetes as the **default load-testing platform**; **15+ REST microservices** load-tested in release cycles — on-demand injectors in an isolated namespace, horizontal worker scaling, teardown after runs; **no dedicated hardware idle between test windows** (injectors on demand, not kept running between campaigns); **adopted by the team** |
+| **Tooling** (First Asset Management) | Built, published, and rolled out [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) — JMeter step-profile validation; analysis **~5–6 h → ~30 min** per campaign |
 | **Batch / K8s** (First Asset Management) | Throughput capped by **1 min cron** batch, not pod count (1 vs 3 pods — no gain); **Kafka** lag — not the bottleneck; recommended event-driven / worker pool |
-| **K8s / Kangal** (First Asset Management) | Standardised distributed JMeter runs on isolated load generators; scalable workers, teardown after runs |
 | **Cooper / SberMarket** (IBS) | Key scenario **~900 → 2600+ orders/h**; seasonal peak **+189%** with no outages (Gatling, Kafka, K8s); **5000+** users in profile |
 | **SPIMEX** (IBS) | **~10 000 WebSocket msg/s** (STOMP), RabbitMQ, event-driven architecture |
 | **JVM / VisualVM** (IBS) | **Remote VisualVM** on soak run: **threads not shutting down**, live count grew under load (not visible in standard dashboards); root cause reported — **fix applied right after** load-test findings |
 | **HornetQ / JBoss** (Alfa-Bank) | Internal queues **not monitored** by business or platform; custom **bash** script (queue depth + timestamp → **CSV** → **Excel** summary) showed **backlog growth**; recommended **JBoss** HornetQ memory limit increase — queues stabilized after rollout |
 | **Oracle** (Alfa-Bank) | LoadRunner, IBM MQ; up to **5000** concurrent users on legal workflows; SQL tuning via execution plans and **AWR**: **~25%** latency reduction, **~15%** throughput gain |
-| **Tooling** | [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) — step profile validation; manual analysis **~5–6 h → ~30 min** per campaign |
 
 ---
 
 ### 🔧 What I Do
 
 - Design realistic load models and **load test methodology / NFR** from business traffic and production signals
-- Build and maintain performance frameworks (**JMeter**, **Gatling**, **LoadRunner**, **k6**); **Kangal** on **Kubernetes**
+- Build and maintain performance frameworks (**JMeter**, **Gatling**, **LoadRunner**, **k6**); **Kangal** on **Kubernetes** (on-demand injectors, scaling, teardown — no idle load hardware between runs)
 - Run load, stress, soak, and **capacity** tests; **regression** performance in release cycles
 - Correlate **Grafana / Prometheus / ELK / APM** with test windows; **RCA** across app, JVM, DB, **Kafka**, K8s
 - **Capacity planning** and SLA forecasting for data growth (PostgreSQL at scale)

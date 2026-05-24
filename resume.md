@@ -27,7 +27,10 @@ Track record of finding **root causes** of degradation and delivering **measurab
 
 Most significant outcomes and **root-cause findings** only — routine issues (pools, indexes, standard JVM/DB tuning, etc.) omitted. Full detail in work experience below.
 
-- **First Asset Management** (asset management, 2025–present): **15+ microservices**; Kangal + JMeter on **Kubernetes**; PostgreSQL capacity — 5 growth models, **~90%** forecast accuracy, **INSERT** up to **8.3×**, SLA horizon **~11 months**; **proposed table partitioning** and index changes to the team — after implementation **20–70 s → ~1 s** (validated to **2B** rows); batch throughput capped by **1 min cron**, not pod count; [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) (**~5–6 h → ~30 min** per campaign).
+- **First Asset Management — Kangal / K8s** (asset management, 2025–present): **introduced and standardized Kangal + JMeter on Kubernetes** as the default load-testing platform; **performance-tested 15+ REST microservices** across release cycles — on-demand injectors in an isolated namespace, horizontal worker scaling, automatic teardown after runs; distributed campaigns **without dedicated hardware idle between test windows**; **adopted by the team** for all release-cycle runs.
+- **First Asset Management — PostgreSQL / capacity:** 5 growth models (0→100M+ rows, **~19 GB / ~12 GB indexes**); **~90%** forecast accuracy; **INSERT** up to **8.3×** (2.7 s → 22–77 s); SLA horizon **~11 months**; **proposed table partitioning** — dev team implemented — **20–70 s → ~1 s** (validated to **2B** rows).
+- **First Asset Management — batch / K8s:** throughput capped by **1 min cron** batch, not pod count (1 vs 3 pods — no gain); **Kafka** lag — not the bottleneck; recommended event-driven / worker pool.
+- **First Asset Management — tooling:** built, published, and rolled out [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) — step-profile validation; analysis **~5–6 h → ~30 min** per campaign.
 - **Cooper / SberMarket (IBS)** (grocery delivery; very similar to **Instacart**): **~900 → 2600+ orders/h**; seasonal peak **+189%** without outages; **5000+** users in profile.
 - **SPIMEX (IBS)** (commodity exchange; very similar to **CME Group**): **~10 000 WebSocket msg/s** (STOMP), RabbitMQ, ClickHouse.
 - **JVM / VisualVM (IBS):** remote VisualVM on soak — **threads not shutting down**, live count grew; fix applied right after load-test findings.
@@ -42,12 +45,12 @@ Most significant outcomes and **root-cause findings** only — routine issues (p
 
 Russian asset management company; very similar to **Vanguard** (mutual funds, ETFs, discretionary portfolios). In-house digital platform on microservices and **Kubernetes**.
 
-- Performance testing of **15+ microservices** (REST API) under release cycles; all campaigns via **Kangal + JMeter** on **Kubernetes** (isolated load generators, scalable workers, teardown).
-- **NFR** validation (p95/p99 latency, throughput); correlation with **Grafana**, **Prometheus**, **Zabbix**, **ELK/OpenSearch**, **HAProxy**, **Redis**.
-- **PostgreSQL capacity planning:** 5 experimental growth models (0→100M+ rows); **~90%** forecast accuracy for degradation and SLA horizon; early **INSERT** degradation up to **8.3×** (2.7 s → 22–77 s); SLA risk **~11 months** without architecture change; **proposed table partitioning** and index tuning to the development team based on load-test evidence; after rollout **20–70 s → ~1 s** (stable on plateau, validated up to **2B** rows).
+- **Proposed PostgreSQL table partitioning and index tuning** based on load-test evidence; the development team implemented the changes — **INSERT latency dropped from 20–70 s to ~1 s or less** (validated to **2B** rows), eliminating the scalability bottleneck projected to breach SLA in **~11 months** at current growth.
+- **PostgreSQL capacity planning:** built **5 growth models** (**0 → 100M+ rows**, **~19 GB data, ~12 GB indexes** at peak); **~90%** forecast accuracy; as data volume grew, **INSERT latency increased from ~2.7 s to 22–77 s** (up to **8.3×**), with up to **800 MB disk read** per operation.
+- **Introduced and standardized Kangal + JMeter on Kubernetes** as the default load-testing platform: **performance-tested 15+ REST microservices** across release cycles — on-demand load generators in an isolated namespace, horizontal scaling of JMeter workers, automatic teardown after runs; distributed campaigns **without dedicated hardware idle between test windows**; **adopted by the team** for all release-cycle runs.
 - **Batch processing in K8s:** throughput limited by **1 min cron** batch, not pod count (1 vs 3 pods — no gain); **Kafka** lag analysis — not the bottleneck; recommended worker pool / event-driven design.
-- Built and published **[jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker)** — step profile validation (10% threshold); campaign analysis **~5–6 h → ~30 min**.
-- Internal automation (**Python**, **GitLab CI**).
+- Built, published, and rolled out **[jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker)** — JMeter step profile validation; **reduced step-profile analysis from ~5–6 h to ~30 min** per campaign.
+- **NFR** validation (p95/p99 latency, throughput); correlation with **Grafana**, **Prometheus**, **Zabbix**, **ELK/OpenSearch**, **HAProxy**, **Redis**. Internal automation (**Python**, **GitLab CI**).
 
 ### IBS, *Senior Performance Test Engineer* (May 2020 - Jan 2025)
 

@@ -32,9 +32,9 @@ Outcomes and **root-cause findings** from load campaigns — **most significant 
 
 | Area | Outcome |
 |------|---------|
-| **PostgreSQL / capacity** (First Asset Management) | 5 growth models (0→100M+ rows, **~19 GB / ~12 GB indexes**); **~90%** forecast accuracy; **INSERT** up to **8.3×**; SLA risk **~11 months**; **proposed table partitioning** — dev team implemented — **20–70 s → ~1 s** (validated to **2B** rows) |
+| **PostgreSQL / capacity** (First Asset Management) | 5 growth models (0→100M+ rows, **~19 GB / ~12 GB indexes**); **~90%** forecast accuracy; as data volume grew, **INSERT latency increased from ~2.7 s to 22–77 s** (up to **8.3×**); SLA breach risk **~11 months**. **Proposed table partitioning and index tuning** based on load-test evidence — **development team implemented** — **INSERT dropped from 20–70 s to ~1 s or less** (validated to **2B** rows), eliminating the projected bottleneck |
 | **K8s / Kangal** (First Asset Management) | **Introduced and standardised** Kangal + JMeter on Kubernetes as the **default load-testing platform**; **15+ REST microservices** load-tested in release cycles — on-demand injectors in an isolated namespace, horizontal worker scaling, teardown after runs; **no dedicated hardware idle between test windows** (injectors on demand, not kept running between campaigns); **adopted by the team** |
-| **Tooling** (First Asset Management) | Built, published, and rolled out [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) — JMeter step-profile validation; analysis **~5–6 h → ~30 min** per campaign |
+| **Tooling** (First Asset Management) | Built, published, and rolled out [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) for the team — JMeter step-profile validation; **reduced step-profile analysis time from ~5–6 hours to ~30 minutes** per campaign |
 | **Batch / K8s** (First Asset Management) | Throughput capped by **1 min cron** batch, not pod count (1 vs 3 pods — no gain); **Kafka** lag — not the bottleneck; recommended event-driven / worker pool |
 | **Cooper / SberMarket** (IBS) | Key scenario **~900 → 2600+ orders/h**; seasonal peak **+189%** with no outages (Gatling, Kafka, K8s); **5000+** users in profile |
 | **SPIMEX** (IBS) | **~10 000 WebSocket msg/s** (STOMP), RabbitMQ, event-driven architecture |

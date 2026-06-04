@@ -20,7 +20,7 @@ I am a **Senior / Lead Performance Engineer** with **7+ years** of hands-on expe
 
 My focus is **performance engineering end-to-end**: workload modelling and **NFR** (p95/p99, throughput), test runs, **observability** (metrics, logs, traces), **bottleneck analysis and RCA**, and actionable recommendations for development and architecture.
 
-At **IBS** I was **senior performance engineer** and **led a load-testing team of ~5 engineers** — planning, mentoring, technical interviews, and release-cycle performance gates — on embedded engagements at major banks, insurers, e-commerce, commodity exchange, and government clients.
+At **IBS** I **led a load-testing team of ~5 engineers** (Team Player 2023, Project Driver 2022) on embedded engagements — e.g. **~4 000** SAP users and **~500+** defects off the prod path (Sberbank), Treasury **~45k ops/h**, grocery **+189%** night LT with **0** incidents, exchange **~10k WebSocket msg/s**, Guidewire **~165k ops/h**.
 
 Currently at **First Asset Management** (Russian asset management; very similar to **Vanguard**) as **Principal Development Engineer (load testing)**: **introduced Kangal + JMeter on Kubernetes**, **load-tested 15+ REST microservices** in release cycles (on-demand injectors, worker scaling, teardown — **no idle load hardware between campaigns**), **PostgreSQL capacity planning** (100M+ rows), and internal **Python** tooling in **GitLab CI**.
 
@@ -32,12 +32,17 @@ Outcomes and **root-cause findings** from load campaigns — **most significant 
 
 | Area | Outcome |
 |------|---------|
-| **PostgreSQL / capacity** (First Asset Management) | 5 growth models (0→100M+ rows, **~19 GB / ~12 GB indexes**); **~90%** forecast accuracy; as data volume grew, **INSERT latency increased from ~2.7 s to 22–77 s** (up to **8.3×**); SLA breach risk **~11 months**. **Proposed table partitioning and index tuning** based on load-test evidence — **development team implemented** — **INSERT dropped from 20–70 s to ~1 s or less** (validated to **2B** rows), eliminating the projected bottleneck |
+| **PostgreSQL / capacity** (First Asset Management) | 5 growth models (0→100M+ rows, **~19 GB / ~12 GB indexes**); **~90%** forecast accuracy; **INSERT ~2.7 s → 22–77 s** (up to **8.3×**); SLA breach risk **~11 months**. **Partitioning + index tuning** (dev implemented on LT evidence) — **INSERT 20–70 s → ≤1 s** (to **2B** rows); capacity horizon **~11 months → ~30 years** at projected growth |
 | **K8s / Kangal** (First Asset Management) | **Introduced and standardised** Kangal + JMeter on Kubernetes as the **default load-testing platform**; **15+ REST microservices** load-tested in release cycles — on-demand injectors in an isolated namespace, horizontal worker scaling, teardown after runs; **no dedicated hardware idle between test windows** (injectors on demand, not kept running between campaigns); **adopted by the team** |
 | **Tooling** (First Asset Management) | Built, published, and rolled out [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) for the team — JMeter step-profile validation; **reduced step-profile analysis time from ~5–6 hours to ~30 minutes** per campaign |
 | **Batch / K8s** (First Asset Management) | Throughput capped by **1 min cron** batch, not pod count (1 vs 3 pods — no gain); **Kafka** lag — not the bottleneck; recommended event-driven / worker pool |
-| **Cooper / SberMarket** (IBS) | Key scenario **~900 → 2600+ orders/h**; seasonal peak **+189%** with no outages (Gatling, Kafka, K8s); **5000+** users in profile |
-| **SPIMEX** (IBS) | **~10 000 WebSocket msg/s** (STOMP), RabbitMQ, event-driven architecture |
+| **Sberbank SAP** (IBS) | ALL IN **~4 000** concurrent users; **~110** LoadRunner scripts; **~50–70** defects/campaign → **~500+** performance defects closed pre go-live across biweekly ERP release train |
+| **Federal Treasury GIIS** (IBS) | Treasury-approved LTM **~45k ops/h** (P1); **15** JMeter scenarios, **7** LT iterations (13h reliability); NGINX **GOST/Lua** — national rollout sign-off |
+| **Cooper / SberMarket** (IBS) | Production night LT (**23:00–03:00**): orders **~900 → 2600+/h** (**+189%**), **0** customer incidents; **5000+** users; **~3900** HTTP req/s at 400% profile (Gatling, Kafka, K8s) |
+| **Rosgosstrakh / Guidewire** (IBS) | **~165k ops/h** peak at **80%** profile; **15+** integration stubs; Oracle/PolicyCenter bottlenecks closed before insurance launch |
+| **Leroy Merlin TMS** (IBS) | **1200%** sign-off (1h peak + 5h soak, Gatling); volume model **~233k shipments**: PostgreSQL **32 ms → 15.1 min** (~**28 000×**) — logistics go-live without portal/DB freeze |
+| **SPIMEX** (IBS) | **~10 000 WebSocket msg/s** (STOMP); soak **thread leak** found (VisualVM) — fix before go-live; RabbitMQ, ClickHouse |
+| **Megapolis / IBS portal** (IBS) | Megapolis SAP HR: **~95–99%** target throughput at sign-off; IBS **1C-Bitrix** portal **~3×** headroom after **2×** CPU |
 | **JVM / VisualVM** (IBS) | **Remote VisualVM** on soak run: **threads not shutting down**, live count grew under load (not visible in standard dashboards); root cause reported — **fix applied right after** load-test findings |
 | **HornetQ / JBoss** (Alfa-Bank) | Internal queues **not monitored** by business or platform; custom **bash** script (queue depth + timestamp → **CSV** → **Excel** summary) showed **backlog growth**; recommended **JBoss** HornetQ memory limit increase — queues stabilized after rollout |
 | **Oracle** (Alfa-Bank) | LoadRunner, IBM MQ; up to **5000** concurrent users on legal workflows; SQL tuning via execution plans and **AWR**: **~25%** latency reduction, **~15%** throughput gain |

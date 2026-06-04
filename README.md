@@ -20,7 +20,7 @@ I am a **Senior / Lead Performance Engineer** with **7+ years** of hands-on expe
 
 My focus is **performance engineering end-to-end**: workload modelling and **NFR** (p95/p99, throughput), test runs, **observability** (metrics, logs, traces), **bottleneck analysis and RCA**, and actionable recommendations for development and architecture.
 
-At **IBS** I **led a load-testing team of ~5 engineers** (Team Player 2023, Project Driver 2022) on embedded engagements — e.g. **~4 000** SAP users and **~500+** defects off the prod path (Sberbank), Treasury **~45k ops/h**, grocery **+189%** night LT with **0** incidents, exchange **~10k WebSocket msg/s**, Guidewire **~165k ops/h**.
+At **IBS** I **led a load-testing team of ~5 engineers** (Team Player 2023, Project Driver 2022) on embedded engagements — e.g. **~4 000** SAP users and **~500+** defects off the prod path (Sberbank), Treasury **~45k ops/h**, grocery night LT **+189%** (**0** incidents) vs **434k orders/day** peak plan, exchange **~10k WebSocket msg/s**, Guidewire **~165k ops/h**.
 
 Currently at **First Asset Management** (Russian asset management; very similar to **Vanguard**) as **Principal Development Engineer (load testing)**: **introduced Kangal + JMeter on Kubernetes**, **load-tested 15+ REST microservices** in release cycles (on-demand injectors, worker scaling, teardown — **no idle load hardware between campaigns**), **PostgreSQL capacity planning** (100M+ rows), and internal **Python** tooling in **GitLab CI**.
 
@@ -38,11 +38,11 @@ Outcomes and **root-cause findings** from load campaigns — **most significant 
 | **Batch / K8s** (First Asset Management) | Throughput capped by **1 min cron** batch, not pod count (1 vs 3 pods — no gain); **Kafka** lag — not the bottleneck; recommended event-driven / worker pool |
 | **Sberbank SAP** (IBS) | ALL IN **~4 000** concurrent users; **~110** LoadRunner scripts; **~50–70** defects/campaign → **~500+** performance defects closed pre go-live across biweekly ERP release train |
 | **Federal Treasury GIIS** (IBS) | Treasury-approved LTM **~45k ops/h** (P1); **15** JMeter scenarios, **7** LT iterations (13h reliability); NGINX **GOST/Lua** — national rollout sign-off |
-| **Cooper / SberMarket** (IBS) | Production night LT (**23:00–03:00**): orders **~900 → 2600+/h** (**+189%**), **0** customer incidents; **5000+** users; **~3900** HTTP req/s at 400% profile (Gatling, Kafka, K8s) |
-| **Rosgosstrakh / Guidewire** (IBS) | **~165k ops/h** peak at **80%** profile; **15+** integration stubs; Oracle/PolicyCenter bottlenecks closed before insurance launch |
+| **Cooper / SberMarket** (IBS) | Prod night LT (**23:00–03:00**), **0** incidents: orders **~900 → 2600+/h** (**+189%**); validated vs Dec **434k orders/day** business plan (company-wide; Shopper/RTE separate); **400%** profile **~3900** HTTP req/s, **450k+** catalog req/h, **5000+** users; **30+** Gatling scenarios; RTE **~822** orders/h @ 100% (Gatling, Kafka, K8s) |
+| **Rosgosstrakh / Guidewire** (IBS) | **~47k ops/h** baseline, **35+** use cases; stepping **~151k** (max) / **~165k** (peak) ops/h at **80%** profile; **15+** stubs; Oracle/PolicyCenter fixes before insurance launch |
 | **Leroy Merlin TMS** (IBS) | **1200%** sign-off (1h peak + 5h soak, Gatling); volume model **~233k shipments**: PostgreSQL **32 ms → 15.1 min** (~**28 000×**) — logistics go-live without portal/DB freeze |
 | **SPIMEX** (IBS) | **~10 000 WebSocket msg/s** (STOMP); soak **thread leak** found (VisualVM) — fix before go-live; RabbitMQ, ClickHouse |
-| **Megapolis / IBS portal** (IBS) | Megapolis SAP HR: **~95–99%** target throughput at sign-off; IBS **1C-Bitrix** portal **~3×** headroom after **2×** CPU |
+| **Megapolis / IBS portal** (IBS) | Megapolis SAP HR **~95–99%** throughput @ sign-off (**~24** threads); IBS **1C-Bitrix** profile **~3380 ops/h**, auth **~425 → ~850** logins/15 min (**2×** CPU), **~3×** headroom (**~400%** vs **~135%**), **2000-user** news spike **~53%** CPU |
 | **JVM / VisualVM** (IBS) | **Remote VisualVM** on soak run: **threads not shutting down**, live count grew under load (not visible in standard dashboards); root cause reported — **fix applied right after** load-test findings |
 | **HornetQ / JBoss** (Alfa-Bank) | Internal queues **not monitored** by business or platform; custom **bash** script (queue depth + timestamp → **CSV** → **Excel** summary) showed **backlog growth**; recommended **JBoss** HornetQ memory limit increase — queues stabilized after rollout |
 | **Oracle** (Alfa-Bank) | LoadRunner, IBM MQ; up to **5000** concurrent users on legal workflows; SQL tuning via execution plans and **AWR**: **~25%** latency reduction, **~15%** throughput gain |

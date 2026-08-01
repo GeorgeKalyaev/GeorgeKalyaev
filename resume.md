@@ -25,24 +25,31 @@ Track record of finding **root causes** of degradation and delivering **measurab
 
 ## Selected results
 
-Most significant outcomes and **root-cause findings** only — routine issues (pools, indexes, standard JVM/DB tuning, etc.) omitted. Full detail in work experience below.
+Most significant outcomes and **root-cause findings** only — routine issues omitted. Full detail in work experience below.
 
-- **First Asset Management — Kangal / K8s** (asset management, 2025–present): **introduced and standardized Kangal + JMeter on Kubernetes** as the default load-testing platform; **performance-tested 15+ REST microservices** across release cycles — on-demand injectors in an isolated namespace, horizontal worker scaling, automatic teardown after runs; distributed campaigns **without dedicated hardware idle between test windows**; **adopted by the team** for all release-cycle runs.
-- **First Asset Management — PostgreSQL / capacity:** 5 growth models (0→100M+ rows, **~19 GB / ~12 GB indexes**); **~90%** forecast accuracy; **INSERT ~2.7 s → 22–77 s** (up to **8.3×**); SLA breach risk **~11 months**. **Partitioning + index tuning** (dev implemented on LT evidence) — **INSERT 20–70 s → ≤1 s** (to **2B** rows); capacity horizon **~11 months → ~30 years** at projected growth.
-- **First Asset Management — batch / K8s:** throughput capped by **1 min cron** batch, not pod count (1 vs 3 pods — no gain); **Kafka** lag — not the bottleneck; recommended event-driven / worker pool.
-- **First Asset Management — tooling:** on own initiative built, published, and rolled out [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) — JMeter step-profile validation; **reduced step-profile analysis time from ~5–6 hours to ~30 minutes** per campaign.
-- **Sberbank SAP (IBS)** (very similar to **JPMorgan Chase**): ALL IN **~4 000** concurrent users; **~110** LoadRunner scripts; **~50–70** defects/campaign → **~500+** performance defects closed pre go-live across biweekly ERP train.
-- **Federal Treasury GIIS (IBS):** Treasury-approved LTM **~45k ops/h** (P1); **15** JMeter HTTPS scenarios with **GOST** signing; **CryptoPro CSP**; NGINX (**GOST** certs per port, custom **Lua** request/response logging) — national rollout sign-off.
-- **Alfa-Bank / FSSP (ScriptMaster):** Federal Bailiff Service integration; LoadRunner (**Java**); load via **IBM MQ** and **file drop** (XML to network share / FTP over **SMB**); **~30** Axis2 SOAP stubs; in-run MQ depth + FTP file-count monitoring; up to **~5000** VU.
-- **Alfa-Bank — Citrix / RDP (ScriptMaster):** separate engagement — LoadRunner **RDP** / Citrix remote-desktop load for concurrent remote sessions.
-- **Cooper / SberMarket (IBS)** (very similar to **Instacart**): prod night LT (**23:00–03:00**), **0** incidents: **~900 → 2600+ orders/h** (**+189%**); vs Dec **434k orders/day** business plan (Shopper/RTE separate); **400%** profile **~3900** HTTP req/s, **450k+** catalog req/h, **5000+** users; **30+** Gatling scenarios; RTE **~822** orders/h @ 100%.
-- **Rosgosstrakh / Guidewire (IBS):** **~47k ops/h** baseline, **35+** use cases; **~151k** (max) / **~165k** (peak) ops/h at **80%** profile; **15+** stubs; Oracle/PolicyCenter fixes before insurance launch.
-- **Leroy Merlin TMS (IBS):** **1200%** sign-off; volume model **~233k shipments** — PostgreSQL query **32 ms → 15.1 min** (~**28 000×**).
-- **SPIMEX (IBS)** (very similar to **CME Group**): **~10 000 WebSocket msg/s** (STOMP); soak thread leak found pre go-live; RabbitMQ, ClickHouse.
-- **Megapolis / IBS portal (IBS):** Megapolis **~95–99%** @ **~24** threads; IBS **1C-Bitrix** **~3380 ops/h**, auth **~425 → ~850** logins/15 min, **~3×** headroom, **2000-user** spike **~53%** CPU.
-- **JVM / VisualVM (IBS):** remote VisualVM on soak — **threads not shutting down**, live count grew; fix applied right after load-test findings.
-- **HornetQ / JBoss (Alfa-Bank / FSSP):** queues unmonitored; custom **bash** → **CSV** → **Excel** summary showed backlog growth; JBoss HornetQ memory config — queues stabilized after rollout.
-- **Oracle (Alfa-Bank / FSSP)** (very similar to **Citigroup**): SQL tuning via execution plans and **AWR** — **~25%** DB latency / **~15%** throughput gain.
+### First Asset Management *(product · 2025–present)*
+
+- **Kangal / K8s:** introduced as the default LT platform; **15+** REST microservices in release cycles — on-demand injectors, worker scaling, teardown; **no idle LT hardware** between campaigns.
+- **PostgreSQL / capacity:** 5 growth models (0→100M+ rows); **~90%** forecast accuracy; INSERT up to **8.3×** slower; after partitioning — **20–70 s → ≤1 s** (to **2B** rows); capacity horizon **~11 months → ~30 years**.
+- **Batch / scaling:** horizontal vs vertical checks — throughput capped by **1 min cron**, not pod count (1 vs 3 pods); Kafka lag not the bottleneck; recommended event-driven / worker pool.
+- **Tooling:** on own initiative [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) — step-profile analysis **~5–6 h → ~30 min**.
+
+### IBS *(consulting / embedded · 2020–2025 · lead ~5 engineers)*
+
+- **Cooper / SberMarket:** prod night LT, **0** incidents; **~900 → 2600+/h** (**+189%**); **5000+** users; **30+** Gatling scenarios.
+- **SPIMEX:** **~10 000 WebSocket msg/s** (STOMP); soak thread leak found pre go-live.
+- **Federal Treasury / GIIS:** LTM **~45k ops/h**; **GOST** signing + **CryptoPro**; NGINX (**GOST** certs per port, custom **Lua** logging).
+- **Rosgosstrakh / Guidewire:** peak **~165k ops/h** @ **80%** profile; **15+** stubs.
+- **Leroy Merlin TMS:** **1200%** sign-off; PG query **32 ms → 15.1 min** under volume model — caught pre go-live.
+- **Sberbank SAP:** **~4 000** users; **~500+** performance defects closed pre go-live.
+- **Megapolis / IBS portal / JVM:** SAP HR and Bitrix capacity; VisualVM soak — threads not shutting down.
+
+### ScriptMaster → Alfa-Bank only *(2019–2020)*
+
+At that time ScriptMaster delivered **Alfa-Bank projects only**. Two engagements:
+
+- **FSSP** (Federal Bailiff Service): LoadRunner (**Java**), up to **~5000** VU. Load via **IBM MQ** and **file drop** (FNS XML → network share / FTP over **SMB**); mixed profile **~75%/25%**; **VTS**; in-run MQ/FTP monitoring; **~30** Axis2 SOAP stubs. **HornetQ** backlog fixed; **Oracle** AWR — latency **−~25%**, throughput **+~15%**.
+- **Citrix / RDP:** separate project — LoadRunner **RDP** / Citrix remote-desktop load for concurrent remote sessions.
 
 ---
 

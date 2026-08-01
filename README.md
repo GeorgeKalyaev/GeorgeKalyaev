@@ -29,26 +29,38 @@ Currently at **First Asset Management** (Russian asset management; very similar 
 
 ## 📊 Selected results
 
-Outcomes and **root-cause findings** from load campaigns — **most significant cases only**. Routine and frequently recurring issues (connection pools, obvious index gaps, standard JVM/DB tuning, and similar) are not listed here; see [full CV](resume.md) for context.
+Outcomes and **root-cause findings** from load campaigns — **most significant cases only**. Routine issues (pools, obvious indexes, standard JVM/DB tuning) are omitted; see [full CV](resume.md).
+
+### First Asset Management *(product · 2025–present)*
 
 | Area | Outcome |
 |------|---------|
-| **PostgreSQL / capacity** (First Asset Management) | 5 growth models (0→100M+ rows, **~19 GB / ~12 GB indexes**); **~90%** forecast accuracy; **INSERT ~2.7 s → 22–77 s** (up to **8.3×**); SLA breach risk **~11 months**. **Partitioning + index tuning** (dev implemented on LT evidence) — **INSERT 20–70 s → ≤1 s** (to **2B** rows); capacity horizon **~11 months → ~30 years** at projected growth |
-| **K8s / Kangal** (First Asset Management) | **Introduced and standardised** Kangal + JMeter on Kubernetes as the **default load-testing platform**; **15+ REST microservices** load-tested in release cycles — on-demand injectors in an isolated namespace, horizontal worker scaling, teardown after runs; **no dedicated hardware idle between test windows** (injectors on demand, not kept running between campaigns); **adopted by the team** |
-| **Tooling** (First Asset Management) | On own initiative built, published, and rolled out [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) — JMeter step-profile validation; **reduced step-profile analysis time from ~5–6 hours to ~30 minutes** per campaign |
-| **Batch / K8s** (First Asset Management) | Throughput capped by **1 min cron** batch, not pod count (1 vs 3 pods — no gain); horizontal vs vertical scaling checks; **Kafka** lag — not the bottleneck; recommended event-driven / worker pool |
-| **Sberbank SAP** (IBS) | ALL IN **~4 000** concurrent users; **~110** LoadRunner scripts; **~50–70** defects/campaign → **~500+** performance defects closed pre go-live across biweekly ERP release train |
-| **Federal Treasury GIIS** (IBS) | Treasury-approved LTM **~45k ops/h** (P1); **15** JMeter HTTPS scenarios with **GOST** signing; **CryptoPro CSP**; NGINX (**GOST** certs per port, custom **Lua** logging) — national rollout sign-off |
-| **Cooper / SberMarket** (IBS) | Prod night LT (**23:00–03:00**), **0** incidents: orders **~900 → 2600+/h** (**+189%**); validated vs Dec **434k orders/day** business plan (company-wide; Shopper/RTE separate); **400%** profile **~3900** HTTP req/s, **450k+** catalog req/h, **5000+** users; **30+** Gatling scenarios; RTE **~822** orders/h @ 100% (Gatling, Kafka, K8s) |
-| **Rosgosstrakh / Guidewire** (IBS) | **~47k ops/h** baseline, **35+** use cases; stepping **~151k** (max) / **~165k** (peak) ops/h at **80%** profile; **15+** stubs; Oracle/PolicyCenter fixes before insurance launch |
-| **Leroy Merlin TMS** (IBS) | **1200%** sign-off (1h peak + 5h soak, Gatling); volume model **~233k shipments**: PostgreSQL **32 ms → 15.1 min** (~**28 000×**) — logistics go-live without portal/DB freeze |
-| **SPIMEX** (IBS) | **~10 000 WebSocket msg/s** (STOMP); soak **thread leak** found (VisualVM) — fix before go-live; RabbitMQ, ClickHouse |
-| **Megapolis / IBS portal** (IBS) | Megapolis SAP HR **~95–99%** throughput @ sign-off (**~24** threads); IBS **1C-Bitrix** profile **~3380 ops/h**, auth **~425 → ~850** logins/15 min (**2×** CPU), **~3×** headroom (**~400%** vs **~135%**), **2000-user** news spike **~53%** CPU |
-| **JVM / VisualVM** (IBS) | **Remote VisualVM** on soak run: **threads not shutting down**, live count grew under load (not visible in standard dashboards); root cause reported — **fix applied right after** load-test findings |
-| **Alfa-Bank / FSSP** (ScriptMaster) | Federal Bailiff Service contour; LoadRunner (**Java**); load via **IBM MQ** + **file drop** (XML → network share / FTP over **SMB**); **~30** Axis2 SOAP stubs; in-run MQ/FTP monitoring; up to **~5000** VU |
-| **Citrix / RDP** (ScriptMaster) | Separate engagement — LoadRunner **RDP** / Citrix remote-desktop load for concurrent remote sessions |
-| **HornetQ / JBoss** (Alfa-Bank / FSSP) | Internal queues **not monitored**; custom **bash** (queue depth → **CSV** / **Excel**) showed **backlog growth**; HornetQ memory limit — queues stabilized after rollout |
-| **Oracle** (Alfa-Bank / FSSP) | Execution plans + **AWR**: **~25%** latency reduction, **~15%** throughput gain |
+| **PostgreSQL / capacity** | 5 growth models (0→100M+ rows, **~19 GB / ~12 GB indexes**); **~90%** forecast accuracy; **INSERT ~2.7 s → 22–77 s** (up to **8.3×**); SLA risk **~11 months**. Partitioning + indexes — **INSERT 20–70 s → ≤1 s** (to **2B** rows); capacity horizon **~11 months → ~30 years** |
+| **K8s / Kangal** | Introduced Kangal + JMeter as the **default LT platform**; **15+** REST microservices in release cycles — on-demand injectors, worker scaling, teardown; **no idle LT hardware** between campaigns |
+| **Tooling** | On own initiative [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) — step-profile check **~5–6 h → ~30 min** per campaign |
+| **Batch / scaling** | Horizontal vs vertical checks: throughput capped by **1 min cron**, not pod count (1 vs 3 pods — no gain); Kafka lag not the bottleneck; recommended event-driven / worker pool |
+
+### IBS *(consulting / embedded · 2020–2025 · lead ~5 engineers)*
+
+| Client / project | Outcome |
+|------------------|---------|
+| **Cooper / SberMarket** | Prod night LT (**23:00–03:00**), **0** incidents: **~900 → 2600+/h** (**+189%**); vs Dec **434k orders/day** plan; **400%** profile **~3900** HTTP req/s, **5000+** users; **30+** Gatling scenarios |
+| **SPIMEX** | **~10 000 WebSocket msg/s** (STOMP); soak **thread leak** (VisualVM) found before go-live; RabbitMQ, ClickHouse |
+| **Federal Treasury / GIIS** | LTM **~45k ops/h** (P1); **15** JMeter HTTPS + **GOST** signing; **CryptoPro CSP**; NGINX (**GOST** certs per port, custom **Lua** logging) — national rollout sign-off |
+| **Rosgosstrakh / Guidewire** | Baseline **~47k ops/h**; peak **~165k ops/h** @ **80%** profile; **15+** stubs; Oracle/PolicyCenter fixes before launch |
+| **Leroy Merlin TMS** | **1200%** sign-off (Gatling); volume **~233k shipments** — PG query **32 ms → 15.1 min** (~**28 000×**) caught pre go-live |
+| **Sberbank SAP** | ALL IN **~4 000** users; **~110** LoadRunner scripts; **~500+** performance defects closed pre go-live across biweekly ERP train |
+| **Megapolis / IBS portal** | SAP HR **~95–99%** @ sign-off; Bitrix auth **~425 → ~850** logins/15 min; **2000-user** spike **~53%** CPU |
+| **JVM / VisualVM** | Soak: threads not shutting down (not in standard dashboards) — fix right after LT findings |
+
+### ScriptMaster → Alfa-Bank only *(2019–2020)*
+
+At that time ScriptMaster delivered **Alfa-Bank projects only**. Two engagements:
+
+| Project | Outcome |
+|---------|---------|
+| **FSSP** (Federal Bailiff Service) | LoadRunner (**Java**), up to **~5000** VU. Load via **IBM MQ** and **file drop** (FNS XML → network share / FTP over **SMB**). Mixed profile **~75%/25%**. **VTS** for unique keys. In-run MQ depth + FTP file-count metrics. **~30** Axis2 SOAP stubs (`.aar` / Tomcat). **HornetQ** backlog fixed (bash → CSV; memory limit). **Oracle** AWR: latency **−~25%**, throughput **+~15%** |
+| **Citrix / RDP** | Separate project: LoadRunner **RDP** / Citrix remote-desktop load — concurrent remote sessions, channel and server stability under peak |
 
 ---
 

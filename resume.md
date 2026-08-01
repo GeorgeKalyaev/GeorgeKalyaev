@@ -30,7 +30,7 @@ Most significant outcomes and **root-cause findings** only — routine issues om
 ### First Asset Management *(product · 2025–present)*
 
 - **Kangal / K8s:** introduced as the default LT platform; **15+** REST microservices in release cycles — on-demand injectors, worker scaling, teardown; **no idle LT hardware** between campaigns.
-- **PostgreSQL / capacity:** 5 growth models (0→100M+ rows); **~90%** forecast accuracy; INSERT up to **8.3×** slower; after partitioning — **20–70 s → ≤1 s** (to **2B** rows); capacity horizon **~11 months → ~30 years**.
+- **PostgreSQL / capacity:** 5 growth models (0→100M+ rows); **~90%** forecast accuracy; INSERT up to **8.3×** slower; after partitioning — **20–70 s → ≤1 s** (to **2B** rows); capacity horizon **~11 months → ~30 years** — [article](https://www.linkedin.com/pulse/how-we-found-postgresql-bottleneck-during-load-testing-kaliaev-rbr2e/).
 - **Batch / scaling:** horizontal vs vertical checks — throughput capped by **1 min cron**, not pod count (1 vs 3 pods); Kafka lag not the bottleneck; recommended event-driven / worker pool.
 - **Tooling:** on own initiative [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) — step-profile analysis **~5–6 h → ~30 min**.
 
@@ -59,7 +59,7 @@ At that time ScriptMaster delivered **Alfa-Bank projects only**. Two engagements
 
 Russian asset management company; very similar to **Vanguard** (mutual funds, ETFs, discretionary portfolios). In-house digital platform on microservices and **Kubernetes**.
 
-- **Proposed PostgreSQL table partitioning and index tuning** based on load-test evidence; dev implemented — **INSERT 20–70 s → ≤1 s** (to **2B** rows); capacity horizon **~11 months → ~30 years** at projected growth (vs **~11 months** breach risk before fix).
+- **Proposed PostgreSQL table partitioning and index tuning** based on load-test evidence; dev implemented — **INSERT 20–70 s → ≤1 s** (to **2B** rows); capacity horizon **~11 months → ~30 years** at projected growth (vs **~11 months** breach risk before fix); [LinkedIn article](https://www.linkedin.com/pulse/how-we-found-postgresql-bottleneck-during-load-testing-kaliaev-rbr2e/).
 - **PostgreSQL capacity planning:** built **5 growth models** (**0 → 100M+ rows**, **~19 GB data, ~12 GB indexes** at peak); **~90%** forecast accuracy; as data volume grew, **INSERT latency increased from ~2.7 s to 22–77 s** (up to **8.3×**), with up to **800 MB disk read** per operation.
 - **Introduced and standardized Kangal + JMeter on Kubernetes** as the default load-testing platform: **performance-tested 15+ REST microservices** across release cycles — on-demand load generators in an isolated namespace, horizontal scaling of JMeter workers, automatic teardown after runs; distributed campaigns **without dedicated hardware idle between test windows**; **adopted by the team** for all release-cycle runs.
 - **Horizontal vs vertical scaling checks** on microservices in K8s; **batch processing:** throughput limited by **1 min cron** batch, not pod count (1 vs 3 pods — no gain); **Kafka** lag analysis — not the bottleneck; recommended worker pool / event-driven design.

@@ -35,7 +35,7 @@ Outcomes and **root-cause findings** from load campaigns — **most significant 
 
 | Area | Outcome |
 |------|---------|
-| **PostgreSQL / capacity** | 5 growth models (0→100M+ rows, **~19 GB / ~12 GB indexes**); **~90%** forecast accuracy; **INSERT ~2.7 s → 22–77 s** (up to **8.3×**); SLA risk **~11 months**. Partitioning + indexes — **INSERT 20–70 s → ≤1 s** (to **2B** rows); capacity horizon **~11 months → ~30 years** |
+| **PostgreSQL / capacity** | 5 growth models (0→100M+ rows, **~19 GB / ~12 GB indexes**); **~90%** forecast accuracy; **INSERT ~2.7 s → 22–77 s** (up to **8.3×**); SLA risk **~11 months**. Partitioning + indexes — **INSERT 20–70 s → ≤1 s** (to **2B** rows); capacity horizon **~11 months → ~30 years** — [article](https://www.linkedin.com/pulse/how-we-found-postgresql-bottleneck-during-load-testing-kaliaev-rbr2e/) |
 | **K8s / Kangal** | Introduced Kangal + JMeter as the **default LT platform**; **15+** REST microservices in release cycles — on-demand injectors, worker scaling, teardown; **no idle LT hardware** between campaigns |
 | **Tooling** | On own initiative [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) — step-profile check **~5–6 h → ~30 min** per campaign |
 | **Batch / scaling** | Horizontal vs vertical checks: throughput capped by **1 min cron**, not pod count (1 vs 3 pods — no gain); Kafka lag not the bottleneck; recommended event-driven / worker pool |

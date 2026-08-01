@@ -67,7 +67,7 @@ At that time ScriptMaster delivered **Alfa-Bank projects only**. Two engagements
 ### 🔧 What I Do
 
 - Design realistic load models and **load test methodology / NFR** from business traffic and production signals
-- Build and maintain performance frameworks (**JMeter**, **Gatling**, **LoadRunner**, **k6**); **Kangal** on **Kubernetes** (on-demand injectors, scaling, teardown — no idle load hardware between runs)
+- Build and maintain performance frameworks (**JMeter**, **Gatling**, **LoadRunner**, **k6**); **Kangal** on **Kubernetes** (on-demand injectors, scaling, teardown — no idle load hardware between runs); tune load-generator hosts (`limits.conf` / `sysctl`) so the injector is not the bottleneck
 - Run load, stress, soak, and **capacity** tests; **regression** performance in release cycles
 - Correlate **Grafana / Prometheus / ELK / APM** with test windows; **RCA** across app, JVM, DB, **Kafka**, K8s
 - **Capacity planning** and SLA forecasting for data growth (PostgreSQL at scale)
@@ -197,6 +197,7 @@ At that time ScriptMaster delivered **Alfa-Bank projects only**. Two engagements
 - **[jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker)** (open source) — validate JMeter load profile by step (10% threshold)
 - **PostgreSQL bottleneck at scale** — capacity, INSERT degradation, data model and indexing — [LinkedIn](https://www.linkedin.com/pulse/how-we-found-postgresql-bottleneck-during-load-testing-kaliaev-rbr2e/)
 - **NGINX + JMeter** — multiple client certs, GOST, proxy instead of Fiddler — [LinkedIn](https://www.linkedin.com/pulse/why-we-started-using-nginx-load-testing-jmeter-george-kalyaev-ump7e/)
+- **Load generator OS tuning** — `limits.conf` / `sysctl` when the bottleneck is the injector, not the SUT — [LinkedIn](https://www.linkedin.com/pulse/when-bottleneck-load-generator-limitsconf-sysctl-georgii-kaliaev-mnoye/)
 
 ---
 

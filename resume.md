@@ -216,6 +216,7 @@ IT integrator on **Alfa-Bank** projects (major private bank; very similar to **C
 - [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) (open source)
 - **PostgreSQL at scale** — [LinkedIn](https://www.linkedin.com/pulse/how-we-found-postgresql-bottleneck-during-load-testing-kaliaev-rbr2e/)
 - **NGINX + JMeter** — [LinkedIn](https://www.linkedin.com/pulse/why-we-started-using-nginx-load-testing-jmeter-george-kalyaev-ump7e/)
+- **Load generator OS tuning** (`limits.conf` / `sysctl`) — [LinkedIn](https://www.linkedin.com/pulse/when-bottleneck-load-generator-limitsconf-sysctl-georgii-kaliaev-mnoye/)
 
 ---
 

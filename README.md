@@ -44,11 +44,11 @@ Outcomes and **root-cause findings** from load campaigns — **most significant 
 
 | Client / project | Outcome |
 |------------------|---------|
-| **Cooper / SberMarket** | Prod night LT (**23:00–03:00**), **0** incidents: **~900 → 2600+/h** (**+189%**); vs Dec **434k orders/day** plan; **400%** profile **~3900** HTTP req/s, **5000+** users; **30+** Gatling scenarios |
+| **Cooper / SberMarket** | Prod night LT (**23:00–03:00**), **0** incidents: **~900 → 2600+/h** (**+189%**); vs Dec **434k orders/day** plan; **400%** profile **~3900** HTTP req/s, **5000+** users; **30+** Gatling scenarios — [anonymized suite](https://github.com/GeorgeKalyaev/gatling-grocery-ecommerce-suite) |
 | **SPIMEX** | **~10 000 WebSocket msg/s** (STOMP); soak **thread leak** (VisualVM) found before go-live; RabbitMQ, ClickHouse |
 | **Federal Treasury / GIIS** | LTM **~45k ops/h** (P1); **15** JMeter HTTPS + **GOST** signing; **CryptoPro CSP**; NGINX (**GOST** certs per port, custom **Lua** logging) — national rollout sign-off; [article: why we used NGINX for LT with JMeter](https://www.linkedin.com/pulse/why-we-started-using-nginx-load-testing-jmeter-george-kalyaev-ump7e/) |
 | **Rosgosstrakh / Guidewire** | Baseline **~47k ops/h**; peak **~165k ops/h** @ **80%** profile; **15+** stubs; Oracle/PolicyCenter fixes before launch |
-| **Leroy Merlin TMS** | **1200%** sign-off (Gatling); volume **~233k shipments** — PG query **32 ms → 15.1 min** (~**28 000×**) caught pre go-live |
+| **Leroy Merlin TMS** | **1200%** sign-off (Gatling); volume **~233k shipments** — PG query **32 ms → 15.1 min** (~**28 000×**) caught pre go-live — [anonymized suite](https://github.com/GeorgeKalyaev/gatling-tms-carrier-portal-suite) |
 | **Sberbank SAP** | ALL IN **~4 000** users; **~110** LoadRunner scripts; **~500+** performance defects closed pre go-live across biweekly ERP train |
 | **Megapolis / IBS portal** | SAP HR **~95–99%** @ sign-off; Bitrix auth **~425 → ~850** logins/15 min; **2000-user** spike **~53%** CPU |
 | **JVM / VisualVM** | Soak: threads not shutting down (not in standard dashboards) — fix right after LT findings |

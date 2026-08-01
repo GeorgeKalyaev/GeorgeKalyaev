@@ -9,7 +9,8 @@
 
 <!-- GitHub → Settings → Public profile:
   LinkedIn: https://www.linkedin.com/in/georgii-kaliaev-3826b6214/
-  Bio (suggested): Senior / Lead Performance Engineer · 7+ years · load, capacity, RCA · JMeter, Gatling, K8s/Kangal · First Asset Management (asset mgmt) · ex-IBS lead ~5 engineers
+  Bio (suggested): Senior / Lead Performance Engineer · 7+ years · load, capacity, RCA · JMeter, Gatling, LoadRunner, K8s/Kangal · FSSP file+MQ, Citrix/RDP · First Asset Management · ex-IBS lead ~5
+  Pinned (suggested): jmeter-load-profile-checker, gatling-webtours-demo, k6-webtours-demo, nbomber-webtours-demo, LoadRunner-WebTours
 -->
 
 ---
@@ -34,18 +35,20 @@ Outcomes and **root-cause findings** from load campaigns — **most significant 
 |------|---------|
 | **PostgreSQL / capacity** (First Asset Management) | 5 growth models (0→100M+ rows, **~19 GB / ~12 GB indexes**); **~90%** forecast accuracy; **INSERT ~2.7 s → 22–77 s** (up to **8.3×**); SLA breach risk **~11 months**. **Partitioning + index tuning** (dev implemented on LT evidence) — **INSERT 20–70 s → ≤1 s** (to **2B** rows); capacity horizon **~11 months → ~30 years** at projected growth |
 | **K8s / Kangal** (First Asset Management) | **Introduced and standardised** Kangal + JMeter on Kubernetes as the **default load-testing platform**; **15+ REST microservices** load-tested in release cycles — on-demand injectors in an isolated namespace, horizontal worker scaling, teardown after runs; **no dedicated hardware idle between test windows** (injectors on demand, not kept running between campaigns); **adopted by the team** |
-| **Tooling** (First Asset Management) | Built, published, and rolled out [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) for the team — JMeter step-profile validation; **reduced step-profile analysis time from ~5–6 hours to ~30 minutes** per campaign |
-| **Batch / K8s** (First Asset Management) | Throughput capped by **1 min cron** batch, not pod count (1 vs 3 pods — no gain); **Kafka** lag — not the bottleneck; recommended event-driven / worker pool |
+| **Tooling** (First Asset Management) | On own initiative built, published, and rolled out [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) — JMeter step-profile validation; **reduced step-profile analysis time from ~5–6 hours to ~30 minutes** per campaign |
+| **Batch / K8s** (First Asset Management) | Throughput capped by **1 min cron** batch, not pod count (1 vs 3 pods — no gain); horizontal vs vertical scaling checks; **Kafka** lag — not the bottleneck; recommended event-driven / worker pool |
 | **Sberbank SAP** (IBS) | ALL IN **~4 000** concurrent users; **~110** LoadRunner scripts; **~50–70** defects/campaign → **~500+** performance defects closed pre go-live across biweekly ERP release train |
-| **Federal Treasury GIIS** (IBS) | Treasury-approved LTM **~45k ops/h** (P1); **15** JMeter scenarios, **7** LT iterations (13h reliability); NGINX **GOST/Lua** — national rollout sign-off |
+| **Federal Treasury GIIS** (IBS) | Treasury-approved LTM **~45k ops/h** (P1); **15** JMeter HTTPS scenarios with **GOST** signing; **CryptoPro CSP**; NGINX (**GOST** certs per port, custom **Lua** logging) — national rollout sign-off |
 | **Cooper / SberMarket** (IBS) | Prod night LT (**23:00–03:00**), **0** incidents: orders **~900 → 2600+/h** (**+189%**); validated vs Dec **434k orders/day** business plan (company-wide; Shopper/RTE separate); **400%** profile **~3900** HTTP req/s, **450k+** catalog req/h, **5000+** users; **30+** Gatling scenarios; RTE **~822** orders/h @ 100% (Gatling, Kafka, K8s) |
 | **Rosgosstrakh / Guidewire** (IBS) | **~47k ops/h** baseline, **35+** use cases; stepping **~151k** (max) / **~165k** (peak) ops/h at **80%** profile; **15+** stubs; Oracle/PolicyCenter fixes before insurance launch |
 | **Leroy Merlin TMS** (IBS) | **1200%** sign-off (1h peak + 5h soak, Gatling); volume model **~233k shipments**: PostgreSQL **32 ms → 15.1 min** (~**28 000×**) — logistics go-live without portal/DB freeze |
 | **SPIMEX** (IBS) | **~10 000 WebSocket msg/s** (STOMP); soak **thread leak** found (VisualVM) — fix before go-live; RabbitMQ, ClickHouse |
 | **Megapolis / IBS portal** (IBS) | Megapolis SAP HR **~95–99%** throughput @ sign-off (**~24** threads); IBS **1C-Bitrix** profile **~3380 ops/h**, auth **~425 → ~850** logins/15 min (**2×** CPU), **~3×** headroom (**~400%** vs **~135%**), **2000-user** news spike **~53%** CPU |
 | **JVM / VisualVM** (IBS) | **Remote VisualVM** on soak run: **threads not shutting down**, live count grew under load (not visible in standard dashboards); root cause reported — **fix applied right after** load-test findings |
-| **HornetQ / JBoss** (Alfa-Bank) | Internal queues **not monitored** by business or platform; custom **bash** script (queue depth + timestamp → **CSV** → **Excel** summary) showed **backlog growth**; recommended **JBoss** HornetQ memory limit increase — queues stabilized after rollout |
-| **Oracle** (Alfa-Bank) | LoadRunner, IBM MQ; up to **5000** concurrent users on legal workflows; SQL tuning via execution plans and **AWR**: **~25%** latency reduction, **~15%** throughput gain |
+| **Alfa-Bank / FSSP** (ScriptMaster) | Federal Bailiff Service contour; LoadRunner (**Java**); load via **IBM MQ** + **file drop** (XML → network share / FTP over **SMB**); **~30** Axis2 SOAP stubs; in-run MQ/FTP monitoring; up to **~5000** VU |
+| **Citrix / RDP** (ScriptMaster) | Separate engagement — LoadRunner **RDP** / Citrix remote-desktop load for concurrent remote sessions |
+| **HornetQ / JBoss** (Alfa-Bank / FSSP) | Internal queues **not monitored**; custom **bash** (queue depth → **CSV** / **Excel**) showed **backlog growth**; HornetQ memory limit — queues stabilized after rollout |
+| **Oracle** (Alfa-Bank / FSSP) | Execution plans + **AWR**: **~25%** latency reduction, **~15%** throughput gain |
 
 ---
 
@@ -71,6 +74,7 @@ Outcomes and **root-cause findings** from load campaigns — **most significant 
 ![Performance Center](https://img.shields.io/badge/Performance%20Center-0052CC?style=flat-square)
 ![LoadIT](https://img.shields.io/badge/LoadIT-546E7A?style=flat-square)
 ![Kangal](https://img.shields.io/badge/Kangal-4CAF50?style=flat-square)
+![NBomber](https://img.shields.io/badge/NBomber-512BD4?style=flat-square)
 
 **Observability / APM**  
 ![Grafana](https://img.shields.io/badge/Grafana-F46800?style=flat-square&logo=grafana&logoColor=white)
@@ -104,6 +108,8 @@ Outcomes and **root-cause findings** from load campaigns — **most significant 
 ![JSON](https://img.shields.io/badge/JSON-000000?style=flat-square)
 ![XML](https://img.shields.io/badge/XML-005571?style=flat-square)
 ![SAP](https://img.shields.io/static/v1?label=SAP&message=ERP%20-%20BW%20-%20FIORI&color=0FAAFF&style=flat-square)
+![RDP / Citrix](https://img.shields.io/badge/RDP%20%2F%20Citrix-0078D4?style=flat-square)
+![SMB](https://img.shields.io/badge/SMB%20file%20drop-546E7A?style=flat-square)
 
 **Languages**  
 ![Java](https://img.shields.io/badge/Java-ED8B00?style=flat-square&logo=openjdk&logoColor=white)

@@ -29,29 +29,29 @@ Most significant outcomes and **root-cause findings** only — routine issues om
 
 ### First Asset Management *(product · 2025–present)*
 
-Asset management firm (funds / portfolios) — internal product platform, not client consulting.
+Asset management firm (funds / portfolios) - internal product platform, not client consulting.
 
-- **Kangal / K8s:** release-cycle LT for internal microservices — introduced as the default LT platform; **15+** REST services — on-demand injectors, worker scaling, teardown; **no idle LT hardware** between campaigns.
-- **PostgreSQL / capacity:** growth / INSERT path on core domain tables — 5 growth models (0→100M+ rows); **~90%** forecast accuracy; INSERT up to **8.3×** slower; after partitioning — **20–70 s → ≤1 s** (to **2B** rows); capacity horizon **~11 months → ~30 years** — [case write-up](https://www.linkedin.com/pulse/how-we-found-postgresql-bottleneck-during-load-testing-kaliaev-rbr2e/).
-- **Batch / scaling:** async / batch jobs vs pod scale — throughput capped by **1 min cron**, not pod count (1 vs 3 pods); Kafka lag not the bottleneck; recommended event-driven / worker pool.
-- **Tooling:** on own initiative [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) — step-profile analysis **~5–6 h → ~30 min**.
+- **Kangal / K8s:** release-cycle LT for internal microservices - introduced as the default LT platform. **15+** REST services - on-demand injectors, worker scaling, teardown. **No idle LT hardware** between campaigns.
+- **PostgreSQL / capacity:** growth / INSERT path on core domain tables - 5 growth models (0→100M+ rows). **~90%** forecast accuracy. INSERT up to **8.3×** slower. After partitioning - **20–70 s → ≤1 s** (to **2B** rows). Capacity horizon **~11 months → ~30 years** - [case write-up](https://www.linkedin.com/pulse/how-we-found-postgresql-bottleneck-during-load-testing-kaliaev-rbr2e/).
+- **Batch / scaling:** async / batch jobs vs pod scale - throughput capped by **1 min cron**, not pod count (1 vs 3 pods - no gain). Kafka lag not the bottleneck. Recommended event-driven / worker pool.
+- **Tooling:** on own initiative [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) - step-profile analysis **~5–6 h → ~30 min**.
 
 ### IBS *(consulting / embedded · 2020–2025 · lead ~5 engineers)*
 
-- **Cooper / SberMarket** *(grocery e-commerce / retail delivery):* **B2C + B2B** (web + mobile), **Shopper** (pickers / couriers), **RTE** separate — prod night LT, **0** incidents; **~900 → 2600+/h** (**+189%**); **5000+** users; **30+** Gatling scenarios — [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-grocery-ecommerce-suite).
-- **SPIMEX** *(commodity exchange, St. Petersburg):* trading WebSocket/STOMP + REST (order book / facade); JMeter + custom Java — **~10 000 WebSocket msg/s**; soak thread leak pre go-live.
-- **Federal Treasury / GIIS** *(gov. public finance / e-budget):* HTTPS + **GOST** e-sign (TOFK / P1) — LTM **~45k ops/h**; **CryptoPro**; NGINX (**GOST** / **Lua**); [article: why we used NGINX for LT with JMeter](https://www.linkedin.com/pulse/why-we-started-using-nginx-load-testing-jmeter-george-kalyaev-ump7e/).
-- **Rosgosstrakh / Guidewire** *(insurance / PolicyCenter):* CASCO/OSAGO, multichannel + stubs — peak **~165k ops/h** @ **80%** profile; **15+** stubs.
-- **Leroy Merlin TMS** *(DIY retail — transport / carrier portal):* internal **TMS** + **CP** — **1200%** sign-off; PG query **32 ms → 15.1 min** under volume model — caught pre go-live — [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-tms-carrier-portal-suite).
-- **Sberbank SAP** *(largest Russian bank — ERP / BW):* SAP GUI/Web/**Fiori** + BW on HANA — **~4 000** users; **~500+** performance defects closed pre go-live.
-- **Megapolis / IBS portal / JVM** *(SAP HR + corporate Bitrix):* SAP HR + Bitrix portals — capacity sign-off; VisualVM soak — threads not shutting down.
+- **Cooper / SberMarket** *(grocery e-commerce / retail delivery):* **B2C + B2B** (web + mobile), **Shopper** (pickers / couriers), **RTE** separate. Prod night LT, **0** incidents. **~900 → 2600+/h** (**+189%**). **5000+** users. **30+** Gatling scenarios - [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-grocery-ecommerce-suite).
+- **SPIMEX** *(commodity exchange, St. Petersburg):* trading WebSocket/STOMP + REST (order book / facade). JMeter + custom Java. **~10 000 WebSocket msg/s**. Soak thread leak pre go-live.
+- **Federal Treasury / GIIS** *(gov. public finance / e-budget):* HTTPS + **GOST** e-sign (TOFK / P1). LTM **~45k ops/h**. **CryptoPro**. NGINX (**GOST** / **Lua**) - [article: why we used NGINX for LT with JMeter](https://www.linkedin.com/pulse/why-we-started-using-nginx-load-testing-jmeter-george-kalyaev-ump7e/).
+- **Rosgosstrakh / Guidewire** *(insurance / PolicyCenter):* CASCO/OSAGO, multichannel + stubs. Peak **~165k ops/h** at **80%** profile. **15+** stubs.
+- **Leroy Merlin TMS** *(DIY retail - transport / carrier portal):* internal **TMS** + **CP**. **1200%** sign-off. PG query **32 ms → 15.1 min** under volume model - caught pre go-live - [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-tms-carrier-portal-suite).
+- **Sberbank SAP** *(largest Russian bank - ERP / BW):* SAP GUI/Web/**Fiori** + BW on HANA. **~4 000** users. **~500+** performance defects closed pre go-live.
+- **Megapolis / IBS portal / JVM** *(SAP HR + corporate Bitrix):* SAP HR + Bitrix portals. Capacity sign-off. VisualVM soak - threads not shutting down.
 
 ### ScriptMaster → Alfa-Bank only *(2019–2020)*
 
 At that time ScriptMaster delivered **Alfa-Bank projects only**. Two engagements:
 
-- **FSSP** (Federal Bailiff Service): bank ↔ gov legal/integration — LoadRunner (**Java**), up to **~5000** VU. Load via **IBM MQ** and **file drop** (FNS XML → network share / FTP over **SMB**); mixed profile **~75%/25%**; **VTS**; in-run MQ/FTP monitoring; **~30** Axis2 SOAP stubs. **HornetQ** backlog fixed; **Oracle** AWR — latency **−~25%**, throughput **+~15%**.
-- **Citrix / RDP:** concurrent remote-desktop sessions — LoadRunner **RDP** / Citrix under peak.
+- **FSSP** (Federal Bailiff Service): bank ↔ gov legal/integration. LoadRunner (**Java**), up to **~5000** VU. Load via **IBM MQ** and **file drop** (FNS XML → network share / FTP over **SMB**). Mixed profile **~75%/25%**. **VTS**. In-run MQ/FTP monitoring. **~30** Axis2 SOAP stubs. **HornetQ** backlog fixed. **Oracle** AWR - latency **−~25%**, throughput **+~15%**.
+- **Citrix / RDP:** concurrent remote-desktop sessions. LoadRunner **RDP** / Citrix under peak.
 
 ---
 

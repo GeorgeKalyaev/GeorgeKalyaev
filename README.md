@@ -33,6 +33,8 @@ Outcomes and **root-cause findings** from load campaigns — **most significant 
 
 ### First Asset Management *(product · 2025–present)*
 
+Asset management firm (funds / portfolios) — internal product platform, not client consulting.
+
 | Area | Outcome |
 |------|---------|
 | **PostgreSQL / capacity** | 5 growth models (0→100M+ rows, **~19 GB / ~12 GB indexes**); **~90%** forecast accuracy; **INSERT ~2.7 s → 22–77 s** (up to **8.3×**); SLA risk **~11 months**. Partitioning + indexes — **INSERT 20–70 s → ≤1 s** (to **2B** rows); capacity horizon **~11 months → ~30 years** — [case write-up](https://www.linkedin.com/pulse/how-we-found-postgresql-bottleneck-during-load-testing-kaliaev-rbr2e/) |
@@ -44,14 +46,14 @@ Outcomes and **root-cause findings** from load campaigns — **most significant 
 
 | Client / project | Outcome |
 |------------------|---------|
-| **Cooper / SberMarket** | Prod night LT (**23:00–03:00**), **0** incidents: **~900 → 2600+/h** (**+189%**); vs Dec **434k orders/day** plan; **400%** profile **~3900** HTTP req/s, **5000+** users; **30+** Gatling scenarios — [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-grocery-ecommerce-suite) |
-| **SPIMEX** | **~10 000 WebSocket msg/s** (STOMP); soak **thread leak** (VisualVM) found before go-live; RabbitMQ, ClickHouse |
-| **Federal Treasury / GIIS** | LTM **~45k ops/h** (P1); **15** JMeter HTTPS + **GOST** signing; **CryptoPro CSP**; NGINX (**GOST** certs per port, custom **Lua** logging) — national rollout sign-off; [article: why we used NGINX for LT with JMeter](https://www.linkedin.com/pulse/why-we-started-using-nginx-load-testing-jmeter-george-kalyaev-ump7e/) |
-| **Rosgosstrakh / Guidewire** | Baseline **~47k ops/h**; peak **~165k ops/h** @ **80%** profile; **15+** stubs; Oracle/PolicyCenter fixes before launch |
-| **Leroy Merlin TMS** | **1200%** sign-off (Gatling); volume **~233k shipments** — PG query **32 ms → 15.1 min** (~**28 000×**) caught pre go-live — [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-tms-carrier-portal-suite) |
-| **Sberbank SAP** | ALL IN **~4 000** users; **~110** LoadRunner scripts; **~500+** performance defects closed pre go-live across biweekly ERP train |
-| **Megapolis / IBS portal** | SAP HR **~95–99%** @ sign-off; Bitrix auth **~425 → ~850** logins/15 min; **2000-user** spike **~53%** CPU |
-| **JVM / VisualVM** | Soak: threads not shutting down (not in standard dashboards) — fix right after LT findings |
+| **Cooper / SberMarket**<br>*grocery e-commerce / retail delivery* | Prod night LT (**23:00–03:00**), **0** incidents: **~900 → 2600+/h** (**+189%**); vs Dec **434k orders/day** plan; **400%** profile **~3900** HTTP req/s, **5000+** users; **30+** Gatling scenarios — [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-grocery-ecommerce-suite) |
+| **SPIMEX**<br>*commodity exchange, St. Petersburg* | **~10 000 WebSocket msg/s** (STOMP); soak **thread leak** (VisualVM) found before go-live; RabbitMQ, ClickHouse |
+| **Federal Treasury / GIIS**<br>*gov. public finance / e-budget* | LTM **~45k ops/h** (P1); **15** JMeter HTTPS + **GOST** signing; **CryptoPro CSP**; NGINX (**GOST** certs per port, custom **Lua** logging) — national rollout sign-off; [article: why we used NGINX for LT with JMeter](https://www.linkedin.com/pulse/why-we-started-using-nginx-load-testing-jmeter-george-kalyaev-ump7e/) |
+| **Rosgosstrakh / Guidewire**<br>*insurance (PolicyCenter)* | Baseline **~47k ops/h**; peak **~165k ops/h** @ **80%** profile; **15+** stubs; Oracle/PolicyCenter fixes before launch |
+| **Leroy Merlin TMS**<br>*DIY retail — transport / carrier portal* | **1200%** sign-off (Gatling); volume **~233k shipments** — PG query **32 ms → 15.1 min** (~**28 000×**) caught pre go-live — [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-tms-carrier-portal-suite) |
+| **Sberbank SAP**<br>*largest Russian bank — ERP / BW* | ALL IN **~4 000** users; **~110** LoadRunner scripts; **~500+** performance defects closed pre go-live across biweekly ERP train |
+| **Megapolis / IBS portal**<br>*SAP HR portal + corporate Bitrix* | SAP HR **~95–99%** @ sign-off; Bitrix auth **~425 → ~850** logins/15 min; **2000-user** spike **~53%** CPU |
+| **JVM / VisualVM**<br>*cross-engagement finding* | Soak: threads not shutting down (not in standard dashboards) — fix right after LT findings |
 
 ### ScriptMaster → Alfa-Bank only *(2019–2020)*
 

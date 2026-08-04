@@ -29,6 +29,8 @@ Most significant outcomes and **root-cause findings** only — routine issues om
 
 ### First Asset Management *(product · 2025–present)*
 
+Asset management firm (funds / portfolios) — internal product platform, not client consulting.
+
 - **Kangal / K8s:** introduced as the default LT platform; **15+** REST microservices in release cycles — on-demand injectors, worker scaling, teardown; **no idle LT hardware** between campaigns.
 - **PostgreSQL / capacity:** 5 growth models (0→100M+ rows); **~90%** forecast accuracy; INSERT up to **8.3×** slower; after partitioning — **20–70 s → ≤1 s** (to **2B** rows); capacity horizon **~11 months → ~30 years** — [case write-up](https://www.linkedin.com/pulse/how-we-found-postgresql-bottleneck-during-load-testing-kaliaev-rbr2e/).
 - **Batch / scaling:** horizontal vs vertical checks — throughput capped by **1 min cron**, not pod count (1 vs 3 pods); Kafka lag not the bottleneck; recommended event-driven / worker pool.
@@ -36,13 +38,13 @@ Most significant outcomes and **root-cause findings** only — routine issues om
 
 ### IBS *(consulting / embedded · 2020–2025 · lead ~5 engineers)*
 
-- **Cooper / SberMarket:** prod night LT, **0** incidents; **~900 → 2600+/h** (**+189%**); **5000+** users; **30+** Gatling scenarios — [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-grocery-ecommerce-suite).
-- **SPIMEX:** **~10 000 WebSocket msg/s** (STOMP); soak thread leak found pre go-live.
-- **Federal Treasury / GIIS:** LTM **~45k ops/h**; **GOST** signing + **CryptoPro**; NGINX (**GOST** certs per port, custom **Lua** logging); [article: why we used NGINX for LT with JMeter](https://www.linkedin.com/pulse/why-we-started-using-nginx-load-testing-jmeter-george-kalyaev-ump7e/).
-- **Rosgosstrakh / Guidewire:** peak **~165k ops/h** @ **80%** profile; **15+** stubs.
-- **Leroy Merlin TMS:** **1200%** sign-off; PG query **32 ms → 15.1 min** under volume model — caught pre go-live — [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-tms-carrier-portal-suite).
-- **Sberbank SAP:** **~4 000** users; **~500+** performance defects closed pre go-live.
-- **Megapolis / IBS portal / JVM:** SAP HR and Bitrix capacity; VisualVM soak — threads not shutting down.
+- **Cooper / SberMarket** *(grocery e-commerce / retail delivery):* prod night LT, **0** incidents; **~900 → 2600+/h** (**+189%**); **5000+** users; **30+** Gatling scenarios — [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-grocery-ecommerce-suite).
+- **SPIMEX** *(commodity exchange, St. Petersburg):* **~10 000 WebSocket msg/s** (STOMP); soak thread leak found pre go-live.
+- **Federal Treasury / GIIS** *(gov. public finance / e-budget):* LTM **~45k ops/h**; **GOST** signing + **CryptoPro**; NGINX (**GOST** certs per port, custom **Lua** logging); [article: why we used NGINX for LT with JMeter](https://www.linkedin.com/pulse/why-we-started-using-nginx-load-testing-jmeter-george-kalyaev-ump7e/).
+- **Rosgosstrakh / Guidewire** *(insurance / PolicyCenter):* peak **~165k ops/h** @ **80%** profile; **15+** stubs.
+- **Leroy Merlin TMS** *(DIY retail — transport / carrier portal):* **1200%** sign-off; PG query **32 ms → 15.1 min** under volume model — caught pre go-live — [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-tms-carrier-portal-suite).
+- **Sberbank SAP** *(largest Russian bank — ERP / BW):* **~4 000** users; **~500+** performance defects closed pre go-live.
+- **Megapolis / IBS portal / JVM** *(SAP HR + corporate Bitrix):* capacity sign-off; VisualVM soak — threads not shutting down.
 
 ### ScriptMaster → Alfa-Bank only *(2019–2020)*
 

@@ -17,44 +17,56 @@
 
 ## 🚀 About Me
 
-I am a **Senior / Lead Performance Engineer** with **7+ years** of hands-on experience in load, stress, capacity, and scalability testing of **high-load distributed systems** — fintech, banking, e-commerce, insurance, government, and trading.
+I am a **Senior / Lead Performance Engineer** with **7+ years** of hands-on experience building and running load, stress, capacity, and scalability testing for **high-load distributed systems** — fintech, banking, e-commerce, insurance, government, and trading.
 
-My focus is **performance engineering end-to-end**: workload modelling and **NFR** (p95/p99, throughput), test runs, **observability** (metrics, logs, traces), **bottleneck analysis and RCA**, and actionable recommendations for development and architecture.
+I design workload models and **NFRs** (p95/p99, throughput), **conduct** test campaigns, **build** observability around them, **find** bottlenecks, and **deliver** actionable recommendations to development and architecture.
 
-At **IBS** I **led a load-testing team of ~5 engineers** (Team Player 2023, Project Driver 2022) on embedded engagements — e.g. **~4 000** SAP users and **~500+** defects off the prod path (Sberbank), Treasury **~45k ops/h**, grocery night LT **+189%** (**0** incidents) vs **434k orders/day** peak plan, exchange **~10k WebSocket msg/s**, Guidewire **~165k ops/h**.
+At **IBS** I **led** a load-testing team of **~5 engineers** (Team Player 2023, Project Driver 2022) — e.g. **identified and closed ~500+** SAP defects before prod (**~4 000** users), **agreed** Treasury LTM **~45k ops/h**, **ran** grocery night LT **+189%** with **0** incidents, **validated** exchange **~10k WebSocket msg/s**, **validated** Guidewire **~165k ops/h**.
 
-Currently at **First Asset Management** (Russian asset management; very similar to **Vanguard**) as **Principal Development Engineer (load testing)**: **introduced Kangal + JMeter on Kubernetes**, **load-tested 15+ REST microservices** in release cycles (on-demand injectors, worker scaling, teardown — **no idle load hardware between campaigns**), **PostgreSQL capacity planning** (100M+ rows), **reduced total CPU by 100+ vCPU** via performance tuning, and internal **Python** tooling in **GitLab CI**.
+Currently at **First Asset Management** (АО УК «Первая»; similar to **Vanguard**) as **Principal Development Engineer (load testing)**: **introduced** Kangal + JMeter on Kubernetes, **load-tested 15+** REST microservices (on-demand injectors, scaling, teardown — **no idle load hardware**), **built** PostgreSQL capacity models (100M+ rows), **reduced** total CPU by **100+ vCPU**, and **developed** internal **Python** tooling in **GitLab CI**.
+
+---
+
+## 📊 Key achievements
+
+- **Cut** total CPU usage by **100+ vCPU** through performance tuning.
+- **Built** Kangal + JMeter on Kubernetes and **load-tested 15+** microservices with on-demand generators.
+- **Developed** [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) — campaign analysis **~5–6 h → ~1 h**.
+- **Conducted** grocery prod night LT: **~900 → 2600+ orders/h** (**+189%**), **0** incidents.
+- **Validated** exchange load at **~10,000 WebSocket msg/s** and **found** a thread leak (OOM risk removed pre go-live).
+- **Identified and closed ~500+** SAP performance defects before production.
+- **Led** load-testing team of **~5** at IBS.
 
 ---
 
 ## 📊 Selected results
 
-Outcomes and **root-cause findings** from load campaigns — **most significant cases only**. Routine issues (pools, obvious indexes, standard JVM/DB tuning) are omitted; see [full CV](resume.md).
+Outcomes from load campaigns — **most significant cases only**. Full detail: [resume.md](resume.md).
 
 ### First Asset Management *(product · 2025–present)*
 
-Asset management firm (funds / portfolios) - internal product platform, not client consulting.
+Asset management firm (funds / portfolios) — internal product platform (АО УК «Первая» / Sber-related projects), not client consulting.
 
 | Area | Outcome |
 |------|---------|
-| **PostgreSQL / capacity** | Growth / INSERT path on core domain tables: 5 growth models (0→100M+ rows, **~19 GB / ~12 GB indexes**). **~90%** forecast accuracy. **INSERT ~2.7 s → 22–77 s** (up to **8.3×**). SLA risk **~11 months**. Partitioning + indexes - **INSERT 20–70 s → ≤1 s** (to **2B** rows). Capacity horizon **~11 months → ~30 years** - [case write-up](https://www.linkedin.com/pulse/how-we-found-postgresql-bottleneck-during-load-testing-kaliaev-rbr2e/) |
-| **K8s / Kangal** | Release-cycle LT for internal microservices: introduced Kangal + JMeter as the **default LT platform**. **15+** REST services - on-demand injectors, worker scaling, teardown. **No idle LT hardware** between campaigns |
-| **CPU / tuning** | Reduced total CPU consumption by **100+ vCPU** through performance tuning (service/JVM/infra recommendations from LT findings) |
-| **Tooling** | Developed and rolled out [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) — step-profile analysis **~5–6 h → ~1 h** per campaign |
-| **Batch / scaling** | Async / batch jobs vs pod scale: throughput capped by **1 min cron**, not pod count (1 vs 3 pods - no gain). Kafka lag not the bottleneck. Recommended event-driven / worker pool |
+| **PostgreSQL / capacity** | **Built 5** growth models (0→100M+ rows). **Forecast** SLA risk (**~90%** accuracy). **Identified** INSERT degradation up to **8.3×** (**~2.7 s → 22–77 s**). **Proposed** partitioning — after fix **INSERT 20–70 s → ≤1 s** (to **2B** rows); horizon **~11 months → ~30 years** — [write-up](https://www.linkedin.com/pulse/how-we-found-postgresql-bottleneck-during-load-testing-kaliaev-rbr2e/) |
+| **K8s / Kangal** | **Introduced** Kangal + JMeter as the default LT platform. **Load-tested 15+** REST services with on-demand injectors, worker scaling, teardown. **No idle LT hardware** between campaigns |
+| **CPU / tuning** | **Reduced** total CPU by **100+ vCPU** through performance tuning from LT findings |
+| **Tooling** | **Developed and rolled out** [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) — analysis **~5–6 h → ~1 h** per campaign |
+| **Batch / scaling** | **Showed** throughput capped by **1 min cron**, not pod count (1→3 pods — no gain). **Recommended** event-driven / worker pool |
 
 ### IBS *(consulting / embedded · 2020–2025 · lead ~5 engineers)*
 
 | Client / project | Outcome |
 |------------------|---------|
-| **Cooper / SberMarket**<br>*grocery e-commerce / retail delivery* | Scope: **B2C + B2B** (web + mobile), **Shopper** (pickers / couriers), **RTE** separate. Prod night LT (**23:00–03:00**), **0** incidents: **~900 → 2600+/h** (**+189%**). Vs Dec **434k orders/day** plan. **400%** profile **~3900** HTTP req/s, **5000+** users. **30+** Gatling scenarios - [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-grocery-ecommerce-suite) |
-| **SPIMEX**<br>*commodity exchange, St. Petersburg* | Trading: WebSocket/STOMP + REST (order book / facade). JMeter + custom Java clients. **~10 000 WebSocket msg/s**. Soak **thread leak** (VisualVM) pre go-live. RabbitMQ, ClickHouse |
-| **Federal Treasury / GIIS**<br>*gov. public finance / e-budget* | HTTPS + **GOST** e-sign contour (TOFK / P1): LTM **~45k ops/h**. **15** JMeter scenarios. **CryptoPro CSP**. NGINX (**GOST** certs per port, **Lua** logging) - national rollout - [article: why we used NGINX for LT with JMeter](https://www.linkedin.com/pulse/why-we-started-using-nginx-load-testing-jmeter-george-kalyaev-ump7e/) |
-| **Rosgosstrakh / Guidewire**<br>*insurance (PolicyCenter)* | CASCO/OSAGO, multichannel. PolicyCenter + **15+** stubs. Baseline **~47k ops/h**. Peak **~165k ops/h** at **80%** profile. Oracle fixes before launch |
-| **Leroy Merlin TMS**<br>*DIY retail - transport / carrier portal* | Internal **TMS** + **carrier portal (CP)**. **1200%** sign-off (Gatling). Volume **~233k shipments** - PG query **32 ms → 15.1 min** (~**28 000×**) caught pre go-live - [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-tms-carrier-portal-suite) |
-| **Sberbank SAP**<br>*largest Russian bank - ERP / BW* | SAP GUI/Web/**Fiori** + BW on HANA. ALL IN **~4 000** users. **~110** LoadRunner scripts. **~500+** performance defects closed pre go-live across biweekly ERP train |
-| **Megapolis / IBS portal**<br>*SAP HR portal + corporate Bitrix* | SAP HR portal + Bitrix corporate portal. SAP HR **~95–99%** at sign-off. Bitrix auth **~425 → ~850** logins/15 min. **2000-user** spike **~53%** CPU |
-| **JVM / VisualVM**<br>*cross-engagement finding* | Found under soak on client app: threads not shutting down (not in standard dashboards). Fix right after LT findings |
+| **Cooper / SberMarket**<br>*grocery e-commerce / retail delivery* | **Developed** Gatling scenarios (B2C/B2B + mobile) and **ran** prod night LT (**23:00–03:00**) with **0** incidents: **~900 → 2600+/h** (**+189%**). **400%** profile **~3900** HTTP req/s, **5000+** users, **30+** scenarios — [suite](https://github.com/GeorgeKalyaev/gatling-grocery-ecommerce-suite) |
+| **SPIMEX**<br>*commodity exchange, St. Petersburg* | **Conducted** trading load (WebSocket/STOMP + REST) at **~10 000 msg/s**. **Found** soak thread leak (VisualVM) — OOM risk removed pre go-live |
+| **Federal Treasury / GIIS**<br>*gov. public finance / e-budget* | **Agreed** LTM **~45k ops/h**. **Built** GOST / CryptoPro contour and **implemented** NGINX (GOST certs per port, **Lua** logging) — [article](https://www.linkedin.com/pulse/why-we-started-using-nginx-load-testing-jmeter-george-kalyaev-ump7e/) |
+| **Rosgosstrakh / Guidewire**<br>*insurance (PolicyCenter)* | **Developed** end-to-end scenarios and **15+** stubs. **Validated** peak **~165k ops/h** at **80%** profile before launch |
+| **Leroy Merlin TMS**<br>*DIY retail - transport / carrier portal* | **Developed** Gatling tests and **signed off 1200%** load. **Caught** PG query **32 ms → 15.1 min** on **~233k shipments** volume before go-live — [suite](https://github.com/GeorgeKalyaev/gatling-tms-carrier-portal-suite) |
+| **Sberbank SAP**<br>*largest Russian bank - ERP / BW* | **Ran** LoadRunner / Performance Center for **~4 000** users and **~110** scripts. **Identified and closed ~500+** performance defects before go-live |
+| **Megapolis / IBS portal**<br>*SAP HR portal + corporate Bitrix* | **Conducted** capacity sign-off. Bitrix auth **~425 → ~850** logins/15 min. **Found** threads not shutting down under soak |
+| **JVM / VisualVM**<br>*cross-engagement finding* | **Monitored** soak with remote VisualVM; **found** threads not shutting down; fix applied right after LT findings |
 
 ### ScriptMaster → Alfa-Bank only *(2019–2020)*
 
@@ -62,21 +74,21 @@ At that time ScriptMaster delivered **Alfa-Bank projects only**. Two engagements
 
 | Project | Outcome |
 |---------|---------|
-| **FSSP** (Federal Bailiff Service) | Bank ↔ gov legal/integration contour. LoadRunner (**Java**), up to **~5000** VU. Load via **IBM MQ** and **file drop** (FNS XML → share / FTP over **SMB**). Mixed **~75%/25%**. **VTS**. In-run MQ/FTP metrics. **~30** Axis2 SOAP stubs. **HornetQ** backlog fixed. **Oracle** AWR: latency **−~25%**, throughput **+~15%** |
-| **Citrix / RDP** | Concurrent remote-desktop sessions: LoadRunner **RDP** / Citrix - channel and server stability under peak |
+| **FSSP** (Federal Bailiff Service) | **Built** LT from scratch. **Conducted** LoadRunner campaigns up to **~5000** VU (IBM MQ + file-drop XML over SMB/FTP). **Developed ~30** SOAP stubs. **Fixed** HornetQ backlog. **Improved** Oracle latency **~−25%**, throughput **~+15%** |
+| **Citrix / RDP** | **Conducted** remote-desktop load tests and **evaluated** channel/server stability under peak concurrent sessions |
 
 ---
 
 ### 🔧 What I Do
 
-- Design realistic load models and **load test methodology / NFR** from business traffic and production signals
-- Build and maintain performance frameworks (**JMeter**, **Gatling**, **LoadRunner**, **k6**); **Kangal** on **Kubernetes** (on-demand injectors, scaling, teardown — no idle load hardware between runs); tune load-generator hosts (`limits.conf` / `sysctl`) so the injector is not the bottleneck
-- Optimize and extend **JMX / VuGen / Gatling** scenarios with **Groovy, Bash, Redis and REST API** — shorter test prep time and more realistic synthetic flow
-- Conduct load, stress, soak, and **capacity** tests; integrate **regression** performance into release cycles
-- Correlate **Grafana / Prometheus / ELK / APM** with test windows; perform **RCA** across app, JVM, DB, **Kafka**, K8s
-- Perform **capacity planning** and SLA forecasting for data growth (PostgreSQL at scale); drive infra/app tuning that cuts wasted capacity (**100+ vCPU** saved on current product platform)
-- **Lead and mentor** performance engineers (**team of ~5** at IBS); technical interviews and hiring
-- Deliver clear, actionable recommendations to engineering, DevOps, and stakeholders
+- **Design** realistic load models and **NFR / methodology** from business traffic and production signals
+- **Build** performance frameworks (**JMeter**, **Gatling**, **LoadRunner**, **k6**); **run** **Kangal** on **Kubernetes** (on-demand injectors, scaling, teardown); **tune** load-generator hosts (`limits.conf` / `sysctl`)
+- **Optimize and extend** **JMX / VuGen / Gatling** scenarios with **Groovy, Bash, Redis and REST API** — shorter prep, more realistic synthetic flow
+- **Conduct** load, stress, soak, and **capacity** tests; **integrate** regression performance into release cycles
+- **Correlate** **Grafana / Prometheus / ELK / APM** with test windows; **perform RCA** across app, JVM, DB, **Kafka**, K8s
+- **Perform** capacity planning and SLA forecasting (PostgreSQL at scale); **drive** tuning that cut **100+ vCPU** on the current platform
+- **Lead and mentor** performance engineers (**team of ~5** at IBS); **conduct** technical interviews and hiring
+- **Deliver** clear recommendations to engineering, DevOps, and stakeholders
 
 ---
 
@@ -186,13 +198,13 @@ At that time ScriptMaster delivered **Alfa-Bank projects only**. Two engagements
 
 ## 🧠 Professional Focus
 
-- Load, stress, and **capacity** testing for **cloud-native / microservices** systems
-- **NFR** validation (p95/p99, throughput, error rate, scalability KPIs)
-- Bottleneck analysis (application, JVM, database, **Kafka/RabbitMQ**, K8s, LB)
-- Performance monitoring, observability, and **distributed tracing** correlation
-- **CI/CD** integration for performance pipelines (GitLab CI, Jenkins, Bamboo)
-- **Technical leadership**: mentoring, interviews, standards for reports and load campaigns (load-testing **team of ~5 engineers** at IBS)
-- Stability, scalability, and reliability engineering
+- **Conduct** load, stress, and **capacity** testing for **cloud-native / microservices** systems
+- **Validate** NFRs (p95/p99, throughput, error rate, scalability KPIs)
+- **Perform** bottleneck analysis (application, JVM, database, **Kafka/RabbitMQ**, K8s, LB)
+- **Build** performance monitoring / observability and **correlate** distributed traces with test windows
+- **Integrate** performance pipelines into **CI/CD** (GitLab CI, Jenkins, Bamboo)
+- **Lead** performance engineers (**team of ~5** at IBS): mentoring, interviews, campaign standards
+- **Improve** stability, scalability, and reliability of high-load platforms
 
 ---
 

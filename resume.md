@@ -15,96 +15,107 @@ Russia, Moscow (open to relocate). [LinkedIn](https://www.linkedin.com/in/georgi
 
 ## Professional summary
 
-Senior / Lead Performance Engineer with **7+ years** of experience in performance engineering of **enterprise and high-load distributed systems** across **fintech, banking, retail, insurance, and government**.
+Senior / Lead Performance Engineer with **7+ years** of experience building and running performance engineering for **enterprise and high-load distributed systems** across **fintech, banking, retail, insurance, and government**.
 
-Specialized in **workload modelling**, **NFR definition** (p95/p99 latency, throughput, scalability KPIs), **capacity planning**, **JVM and database** bottleneck analysis, and **CI/CD-integrated** performance validation. At **IBS**, **led a load-testing team of ~5 engineers**.
+I design workload models and NFRs (p95/p99 latency, throughput, scalability KPIs), run load / stress / capacity campaigns, find JVM and database bottlenecks, and integrate performance checks into CI/CD. At **IBS** I **led a load-testing team of ~5 engineers**.
 
-Track record of finding **root causes** of degradation and delivering **measurable** improvements in latency, throughput, and stability for **mission-critical** platforms.
+I focus on root-cause findings and **measurable** gains in latency, throughput, stability, and infrastructure cost for mission-critical platforms.
+
+---
+
+## Key achievements
+
+- **Cut** total CPU usage by **100+ vCPU** through performance tuning on the current product platform.
+- **Built** a Kubernetes load platform (**Kangal + JMeter**) and load-tested **15+** microservices with on-demand generators (no idle load hardware between runs).
+- **Developed** [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) and **reduced** campaign analysis from **~5–6 hours to ~1 hour**.
+- **Conducted** production night load tests for grocery e-commerce: key flow **~900 → 2600+ orders/h** (**+189%**), **0** customer incidents.
+- **Validated** exchange trading load at **~10,000 WebSocket msg/s** and **found** a thread leak that removed OOM risk before go-live.
+- **Identified and closed ~500+** SAP performance defects before production (**~4,000** users).
+- **Led** a load-testing team of **~5** at IBS (Team Player 2023, Project Driver 2022).
 
 ---
 
 ## Selected results
 
-Most significant outcomes and **root-cause findings** only — routine issues omitted. Full detail in work experience below.
+Most significant outcomes only — routine issues omitted. Full detail in work experience below.
 
 ### First Asset Management *(product · 2025–present)*
 
-Asset management firm (funds / portfolios) - internal product platform, not client consulting.
+Asset management firm (funds / portfolios) — internal product platform (АО УК «Первая» / Sber-related projects), not client consulting.
 
-- **Kangal / K8s:** release-cycle LT for internal microservices - introduced as the default LT platform. **15+** REST services - on-demand injectors, worker scaling, teardown. **No idle LT hardware** between campaigns.
-- **CPU / tuning:** reduced total CPU consumption by **100+ vCPU** through performance tuning (service/JVM/infra recommendations from LT findings).
-- **PostgreSQL / capacity:** growth / INSERT path on core domain tables - 5 growth models (0→100M+ rows). **~90%** forecast accuracy. INSERT up to **8.3×** slower. After partitioning - **20–70 s → ≤1 s** (to **2B** rows). Capacity horizon **~11 months → ~30 years** - [case write-up](https://www.linkedin.com/pulse/how-we-found-postgresql-bottleneck-during-load-testing-kaliaev-rbr2e/).
-- **Batch / scaling:** async / batch jobs vs pod scale - throughput capped by **1 min cron**, not pod count (1 vs 3 pods - no gain). Kafka lag not the bottleneck. Recommended event-driven / worker pool.
-- **Tooling:** on own initiative [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) - step-profile analysis **~5–6 h → ~30 min**.
+- **Built** Kangal + JMeter on Kubernetes as the default load platform and **load-tested 15+** REST microservices with on-demand injectors, worker scaling, and teardown — **no idle load hardware** between campaigns.
+- **Reduced** total CPU consumption by **100+ vCPU** through performance tuning (service / JVM / infra recommendations from load-test findings).
+- **Built 5** PostgreSQL growth models (0→100M+ rows), **forecast** SLA risk with **~90%** accuracy, **identified** INSERT degradation up to **8.3×**, and **proposed** partitioning — after fix **INSERT 20–70 s → ≤1 s** (validated to **2B** rows); capacity horizon **~11 months → ~30 years** — [case write-up](https://www.linkedin.com/pulse/how-we-found-postgresql-bottleneck-during-load-testing-kaliaev-rbr2e/).
+- **Showed** that a 1-minute cron/batch path does not scale by adding pods (1→3 pods, no RPS gain) and **recommended** a worker pool / event-driven design instead of polling.
+- **Developed and rolled out** [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) — **cut** step-profile analysis from **~5–6 h to ~1 h** per campaign.
 
 ### IBS *(consulting / embedded · 2020–2025 · lead ~5 engineers)*
 
-- **Cooper / SberMarket** *(grocery e-commerce / retail delivery):* **B2C + B2B** (web + mobile), **Shopper** (pickers / couriers), **RTE** separate. Prod night LT, **0** incidents. **~900 → 2600+/h** (**+189%**). **5000+** users. **30+** Gatling scenarios - [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-grocery-ecommerce-suite).
-- **SPIMEX** *(commodity exchange, St. Petersburg):* trading WebSocket/STOMP + REST (order book / facade). JMeter + custom Java. **~10 000 WebSocket msg/s**. Soak thread leak pre go-live.
-- **Federal Treasury / GIIS** *(gov. public finance / e-budget):* HTTPS + **GOST** e-sign (TOFK / P1). LTM **~45k ops/h**. **CryptoPro**. NGINX (**GOST** / **Lua**) - [article: why we used NGINX for LT with JMeter](https://www.linkedin.com/pulse/why-we-started-using-nginx-load-testing-jmeter-george-kalyaev-ump7e/).
-- **Rosgosstrakh / Guidewire** *(insurance / PolicyCenter):* CASCO/OSAGO, multichannel + stubs. Peak **~165k ops/h** at **80%** profile. **15+** stubs.
-- **Leroy Merlin TMS** *(DIY retail - transport / carrier portal):* internal **TMS** + **CP**. **1200%** sign-off. PG query **32 ms → 15.1 min** under volume model - caught pre go-live - [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-tms-carrier-portal-suite).
-- **Sberbank SAP** *(largest Russian bank - ERP / BW):* SAP GUI/Web/**Fiori** + BW on HANA. **~4 000** users. **~500+** performance defects closed pre go-live.
-- **Megapolis / IBS portal / JVM** *(SAP HR + corporate Bitrix):* SAP HR + Bitrix portals. Capacity sign-off. VisualVM soak - threads not shutting down.
+- **Cooper / SberMarket:** **Developed** Gatling scenarios (B2C/B2B + mobile) and **ran** night production load tests with **0** incidents; key flow grew **~900 → 2600+/h** (**+189%**), **5000+** users, **30+** scenarios — [suite](https://github.com/GeorgeKalyaev/gatling-grocery-ecommerce-suite).
+- **SPIMEX:** **Conducted** trading-contour load tests (WebSocket/STOMP + REST) at **~10,000 msg/s**, **tested** horizontal scaling of microservices, and **found** a soak thread leak — removed OOM risk before go-live.
+- **Federal Treasury / GIIS:** **Agreed** the load model with the customer (**~45k ops/h**), **built** the GOST / CryptoPro contour, and **implemented** NGINX + Lua logging for multi-cert HTTPS load — [article](https://www.linkedin.com/pulse/why-we-started-using-nginx-load-testing-jmeter-george-kalyaev-ump7e/).
+- **Rosgosstrakh / Guidewire:** **Developed** end-to-end insurance scenarios and **15+** stubs; **validated** peak **~165k ops/h** at **80%** profile before launch.
+- **Leroy Merlin TMS:** **Developed** Gatling scenarios and **ran** tests on a **2–3 year** data volume; **caught** a PostgreSQL query degradation **32 ms → 15.1 min** before go-live — [suite](https://github.com/GeorgeKalyaev/gatling-tms-carrier-portal-suite).
+- **Sberbank SAP:** **Maintained** LoadRunner/Performance Center contour for **~4,000** users and **~110** scripts; **identified and closed ~500+** performance defects before production.
+- **Megapolis / IBS portal:** **Conducted** capacity sign-off for SAP HR and Bitrix portals; **found** threads not shutting down under soak (VisualVM) and drove the fix.
 
 ### ScriptMaster → Alfa-Bank only *(2019–2020)*
 
 At that time ScriptMaster delivered **Alfa-Bank projects only**. Two engagements:
 
-- **FSSP** (Federal Bailiff Service): bank ↔ gov legal/integration. LoadRunner (**Java**), up to **~5000** VU. Load via **IBM MQ** and **file drop** (FNS XML → network share / FTP over **SMB**). Mixed profile **~75%/25%**. **VTS**. In-run MQ/FTP monitoring. **~30** Axis2 SOAP stubs. **HornetQ** backlog fixed. **Oracle** AWR - latency **−~25%**, throughput **+~15%**.
-- **Citrix / RDP:** concurrent remote-desktop sessions. LoadRunner **RDP** / Citrix under peak.
+- **FSSP:** **Built** load testing from scratch for bank↔gov legal flows — up to **~5,000** VU (LoadRunner), IBM MQ + file-drop XML over SMB/FTP, **~30** SOAP stubs; **fixed** HornetQ backlog; **improved** Oracle latency **~−25%** and throughput **~+15%**.
+- **Citrix / RDP:** **Conducted** remote-desktop load tests and **evaluated** channel/server stability under peak concurrent sessions.
 
 ---
 
 ## Work experience
 
-### First Asset Management, *Principal Development Engineer — load testing* (Jan 2025 - Present)
+### First Asset Management (АО УК «Первая»), *Principal Development Engineer — load testing* (Jan 2025 - Present)
 
-Russian asset management company; very similar to **Vanguard** (mutual funds, ETFs, discretionary portfolios). In-house digital platform on microservices and **Kubernetes**.
+Russian asset management company; very similar to **Vanguard** (mutual funds, ETFs, discretionary portfolios). In-house digital platform on microservices and **Kubernetes** (Sber-related projects).
 
-- **Proposed PostgreSQL table partitioning and index tuning** based on load-test evidence; dev implemented — **INSERT 20–70 s → ≤1 s** (to **2B** rows); capacity horizon **~11 months → ~30 years** at projected growth (vs **~11 months** breach risk before fix); [case write-up](https://www.linkedin.com/pulse/how-we-found-postgresql-bottleneck-during-load-testing-kaliaev-rbr2e/).
-- **PostgreSQL capacity planning:** built **5 growth models** (**0 → 100M+ rows**, **~19 GB data, ~12 GB indexes** at peak); **~90%** forecast accuracy; as data volume grew, **INSERT latency increased from ~2.7 s to 22–77 s** (up to **8.3×**), with up to **800 MB disk read** per operation.
-- **Introduced and standardized Kangal + JMeter on Kubernetes** as the default load-testing platform: **performance-tested 15+ REST microservices** across release cycles — on-demand load generators in an isolated namespace, horizontal scaling of JMeter workers, automatic teardown after runs; distributed campaigns **without dedicated hardware idle between test windows**; **adopted by the team** for all release-cycle runs.
-- **Reduced total CPU consumption by 100+ vCPU** through performance tuning (service/JVM/infra recommendations from load-test findings).
-- **Horizontal vs vertical scaling checks** on microservices in K8s; **batch processing:** throughput limited by **1 min cron** batch, not pod count (1 vs 3 pods — no gain); **Kafka** lag analysis — not the bottleneck; recommended worker pool / event-driven design.
-- On own initiative built, published, and rolled out **[jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker)** — JMeter step profile validation; **reduced step-profile analysis from ~5–6 h to ~30 min** per campaign.
-- **NFR** validation (p95/p99 latency, throughput); correlation with **Grafana**, **Prometheus**, **Zabbix**, **ELK/OpenSearch**, **HAProxy**, **Redis**. Internal automation (**Python**, **GitLab CI**).
+- **Proposed** PostgreSQL partitioning and index tuning from load-test evidence; after development implemented — **INSERT 20–70 s → ≤1 s** (to **2B** rows); capacity horizon **~11 months → ~30 years** — [case write-up](https://www.linkedin.com/pulse/how-we-found-postgresql-bottleneck-during-load-testing-kaliaev-rbr2e/).
+- **Built 5** PostgreSQL growth models (**0 → 100M+ rows**, **~19 GB** data / **~12 GB** indexes); **achieved ~90%** forecast accuracy; **identified** INSERT latency growth from **~2.7 s to 22–77 s** (up to **8.3×**).
+- **Introduced** Kangal + JMeter on Kubernetes as the team standard and **performance-tested 15+** REST microservices across release cycles — on-demand injectors, worker scaling, automatic teardown; **no idle load hardware** between campaigns.
+- **Reduced** total CPU consumption by **100+ vCPU** through performance tuning from load-test findings.
+- **Tested** horizontal vs vertical scaling on K8s; **showed** batch throughput limited by a **1 min cron**, not pod count (1 vs 3 pods — no gain); **analyzed** Kafka lag (not the bottleneck); **recommended** worker pool / event-driven design.
+- **Developed, published, and rolled out** **[jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker)** — **reduced** step-profile analysis from **~5–6 h to ~1 h** per campaign.
+- **Validated** NFRs (p95/p99, throughput) and **correlated** Grafana / Prometheus / Zabbix / ELK/OpenSearch / HAProxy / Redis with test windows; **automated** prep and runs with **Python** and **GitLab CI**.
 
 ### IBS, *Senior Performance Test Engineer* (May 2020 - Jan 2025)
 
 Large IT consulting and system integrator; very similar to **EPAM** or **Accenture** (embedded in client teams). Engagements across banking, insurance, retail and e-commerce, commodity exchange, and government.
 
-- **Led a load-testing team of ~5 engineers:** campaign planning, mentoring, onboarding, technical interviews, hiring. IBS awards: **Team Player** (2023), **Project Driver** (2022).
-- **Optimized and extended JMX / VuGen / Gatling scenarios** with **Groovy, Bash, Redis and REST API** — shorter test-prep time and more realistic synthetic flow.
-- **Observability and logs (across engagements):** **Grafana** with **InfluxDB** / **Telegraf**, **Zabbix**, **ELK** (**Elasticsearch**, **Kibana**; **Logstash** / **Filebeat** as deployed); plus **AppDynamics** and **Splunk** for APM-style analysis and incident triage.  
-- **Sber** (Russia's largest bank; very similar to **JPMorgan Chase**) — **SAP ERP / SAP BW** on **HANA** (**LoadRunner** / **Performance Center**): ALL IN **~4 000** concurrent users; **~110** scripts (SAP GUI/Web, **Fiori**); **~50–70** defects/campaign → **~500+** closed pre go-live; **~10** biweekly ERP cycles; BW on separate analytical cadence; **Jira** / **Confluence**.  
-- **Rosgosstrakh / Guidewire** (very similar to **State Farm**) — customer-approved **LTM**; **PREPROD** → dedicated LT stand; **15+** stubs (**Spring Boot**, **MockServer**); stepping peak **~165k ops/h** at **80%** profile; **47k ops/h** baseline, **35+** use cases (**CASCO**, **OSAGO**, multichannel); Oracle/PolicyCenter fixes before launch; **AppDynamics**, **Splunk**, **Bamboo**.  
-- **SPIMEX** (national commodity exchange; very similar to **CME Group**) — exchange / trading workloads: up to **~10,000 WebSocket** messages/s (**STOMP**), **RabbitMQ**; **REST** microservices and **ClickHouse** (time-series, ingest) plus **JDBC** to **PostgreSQL**; **JSR223** in **JMeter** to drive trading-style traffic into **RabbitMQ**; **custom Java** load clients (**Spring**, **STOMP**/**WebSocket**, **order book** / **facade** scenarios) alongside **JMeter**; on injectors — **Telegraf**, **InfluxDB 2.x**, **Grafana** (including **JMeter** and **Java** run metrics), customer **Zabbix** and **RabbitMQ Management** for queue depth.  
-- **Leroy Merlin** (very similar to **Home Depot**) — **Gatling**: **1200%** sign-off (1h peak + 5h soak) on **TMS** / **Carrier Portal** (**K8s**, **PostgreSQL**, **Redis**); volume model **~233k shipments** (2–3 years): max query **32 ms → 15.1 min**, UI freeze localized pre go-live; [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-tms-carrier-portal-suite).  
-- **Cooper / SberMarket** (very similar to **Instacart**) — prod night LT (**23:00–03:00**), **0** incidents: **~900 → 2600+/h** (**+189%**); validated vs **434k orders/day** Dec peak plan (Shopper/RTE separate); **400%** profile **~3900** HTTP req/s, **450k+** catalog req/h, **5000+** users; **30+** Gatling; RTE **~822** orders/h; prod-scale test data (**~45k** B2C/B2B accounts, **~2k** RTE, **1200** Shopper stores); **Kafka**, **PostgreSQL**, ELK; [full Gatling suite (fully anonymized)](https://github.com/GeorgeKalyaev/gatling-grocery-ecommerce-suite).  
-- **GIIS “Electronic Budget” / Federal Treasury** (very similar to U.S. **Treasury**): Treasury-approved LTM **~45k ops/h** (P1, **TOFK** statistics); **15** JMeter HTTPS scenarios with **GOST** e-signature; **CryptoPro CSP** on injectors/stand (**TLS** / gov cert chains); **NGINX** (**nginx-extras**): port-based split, **GOST** cert per port, custom **Lua** request/response logging under load; **7** LT iterations (13h reliability); **Redis**; **Telegraf**, **InfluxDB**, **Grafana**; [LinkedIn article](https://www.linkedin.com/pulse/why-we-started-using-nginx-load-testing-jmeter-george-kalyaev-ump7e/) on why the team moved to NGINX for gov-cert LT.  
-- **Megapolis (GKM)** — SAP HR portal: **~95–99%** target throughput at sign-off load (**~24** threads), p90 **3–10 s**; peak stress risks documented at **240** threads.  
-- **Corporate portal (IBS internal)** — **1C-Bitrix**: profile **~3380 ops/h** from analytics; **2×** CPU → auth **~425 → ~850** logins/15 min; **~3×** headroom (**~400%** vs **~135%**); **2000-user** news spike **~53%** CPU; AD vs local login RCA.  
-- **Technical interviews**, mentoring, hiring contributions.  
-- **JVM / VisualVM (IBS):** during load and soak runs monitored the application with **remote VisualVM** (thread timeline, live thread count); on one engagement thread-level metrics were **not visible in standard dashboards** — found **threads not shutting down**: live count **grew steadily** under load; localized the pattern, reported root cause to development; **fix applied right after the load-test findings**.  
-- **JVM and OS limits (across engagements):** GC, heap, thread contention; extra **scheduler** threads (**RxJava**-style pools, metric export to **InfluxDB**); when hitting **native** memory / OS limits — diagnosis and **temporary** mitigation (**vm.max_map_count**, **ulimit** **nproc**/**nofile**) pending code fixes; dumps, logs, correlation with the run.  
-- **NFR** definition and validation across client engagements.  
-- **Profiling and distributed tracing** where available: **APM** (**AppDynamics** and similar) for **distributed traces** and slow spans; JVM profiling; correlating traces, spans, and metrics with load-test windows; without full APM — logs, metrics, and time-based correlation.  
+- **Led** a load-testing team of **~5 engineers**: campaign planning, mentoring, onboarding, technical interviews, hiring. Awards: **Team Player** (2023), **Project Driver** (2022).
+- **Optimized and extended** JMX / VuGen / Gatling scenarios with **Groovy, Bash, Redis and REST API** — shortened test-prep time and made synthetic flow more realistic.
+- **Built** observability for campaigns with **Grafana**, **InfluxDB** / **Telegraf**, **Zabbix**, **ELK**, plus **AppDynamics** and **Splunk** for incident triage.
+- **Sber** (similar to **JPMorgan Chase**) — **Ran** SAP ERP / SAP BW on HANA load with LoadRunner / Performance Center: **~4,000** concurrent users, **~110** scripts (SAP GUI/Web, **Fiori**); **identified ~50–70** defects per campaign and **closed ~500+** before go-live across biweekly ERP cycles.
+- **Rosgosstrakh / Guidewire** (similar to **State Farm**) — **Developed** LTM with customer, **built** PREPROD → dedicated LT stand, **created 15+** stubs (**Spring Boot**, **MockServer**), and **validated** peak **~165k ops/h** at **80%** profile (**47k ops/h** baseline, **35+** use cases: CASCO / OSAGO / multichannel).
+- **SPIMEX** (similar to **CME Group**) — **Conducted** exchange load up to **~10,000 WebSocket** msg/s (**STOMP**) with **RabbitMQ**; **drove** REST microservices and **ClickHouse** / PostgreSQL paths; **built** custom Java clients alongside JMeter; **monitored** injectors with Telegraf / InfluxDB / Grafana.
+- **Leroy Merlin** (similar to **Home Depot**) — **Developed** Gatling tests and **signed off 1200%** load (1h peak + 5h soak) on TMS / Carrier Portal; **caught** PG query **32 ms → 15.1 min** on **~233k shipments** volume model before go-live — [suite](https://github.com/GeorgeKalyaev/gatling-tms-carrier-portal-suite).
+- **Cooper / SberMarket** (similar to **Instacart**) — **Ran** production night LT (**23:00–03:00**) with **0** incidents: **~900 → 2600+/h** (**+189%**); **validated** against **434k orders/day** peak plan; **executed** **400%** profile (**~3900** HTTP req/s, **5000+** users, **30+** Gatling scenarios) — [suite](https://github.com/GeorgeKalyaev/gatling-grocery-ecommerce-suite).
+- **GIIS “Electronic Budget” / Federal Treasury** — **Agreed** LTM **~45k ops/h** with the customer; **developed 15** JMeter HTTPS scenarios with **GOST** e-signature; **configured** CryptoPro CSP and **implemented** NGINX (GOST cert per port, Lua logging); **completed 7** LT iterations including 13h reliability — [article](https://www.linkedin.com/pulse/why-we-started-using-nginx-load-testing-jmeter-george-kalyaev-ump7e/).
+- **Megapolis (GKM)** — **Conducted** SAP HR portal capacity testing: **~95–99%** target throughput at sign-off (**~24** threads); **documented** peak stress risks at **240** threads.
+- **Corporate portal (IBS internal)** — **Tested** 1C-Bitrix capacity (**~3380 ops/h** profile); **showed** auth **~425 → ~850** logins/15 min after **2×** CPU; **analyzed** AD vs local login under a **2000-user** spike (**~53%** CPU).
+- **Conducted** technical interviews, mentoring, and hiring.
+- **Monitored** JVM with remote VisualVM under load/soak; **found** threads not shutting down (live count grew steadily); **reported** root cause — fix applied right after findings.
+- **Diagnosed** JVM/OS limits (GC, heap, thread contention, native memory) and **applied** temporary mitigations (`vm.max_map_count`, `ulimit`) pending code fixes.
+- **Defined and validated** NFRs across client engagements; **correlated** APM traces (AppDynamics) and metrics with load-test windows.
 
-### ScriptMaster, *Performance Test Engineer* (Jul 2019 - May 2020)
+### ScriptMaster, *Performance Test Engineer* (Jul 2019 - Apr 2020)
 
 IT integrator on **Alfa-Bank** projects (major private bank; very similar to **Citigroup**): **30M+** retail clients.
 
-**Federal Bailiff Service (FSSP)** — bank ↔ government legal/integration contour. Built load testing from scratch: scenarios → stand → runs → RCA → readiness sign-off.
+**Federal Bailiff Service (FSSP)** — bank ↔ government legal/integration contour. **Built** load testing from scratch: scenarios → stand → runs → RCA → readiness sign-off.
 
-- **LoadRunner** (**Java**) / **Performance Center**; up to **~5,000** concurrent users on FSSP legal and transaction flows.
-- Load injected **two ways**: **IBM MQ** and **file-based** entry — generated FNS XML (collection orders / statement requests, **windows-1251**) and dropped into network share / FTP folders over **SMB** (**jcifs**); the app picked up files and continued processing. Mixed profile **~75%** full-balance vs **~25%** fixed-amount documents; unique document keys via **VTS** (Virtual Table Server).
-- **In-run custom monitoring** in LoadRunner: depth of dozens of **IBM MQ** queues (incl. crypto / error queues) and file counts on FTP processing folders as **user data points** — caught backlog and file-pipeline stalls during the run.
-- Built and maintained **~30** SOAP stubs on **Java** (**Apache Axis2**): **.aar** packages with bank **WSDL/XSD** (accounts, balances, holds, customer data, SMS, etc.), deployed to **Axis2** on **Tomcat** to isolate LT from real adjacent systems.
-- **HornetQ (JBoss)** internal queues were **not monitored** — **bash** script sampled queue depth → **CSV** / Excel; localized backlog under load; initiated HornetQ memory limit increase (`address/global-max-size`) — queues stabilized after rollout.
-- **Oracle** tuning (execution plans, **AWR**): **~25%** DB latency reduction, **~15%** throughput gain. **JBoss** JVM monitoring (GC, thread pools).
+- **Developed** LoadRunner (**Java**) / Performance Center scenarios for up to **~5,000** concurrent users on FSSP legal and transaction flows.
+- **Injected** load two ways: **IBM MQ** and **file-based** entry — **generated** FNS XML and **dropped** files to SMB/FTP shares; mixed profile **~75%/25%**; unique keys via **VTS**.
+- **Built** in-run custom monitoring in LoadRunner (IBM MQ depth + FTP file counts as user data points) and **caught** backlog during the run.
+- **Developed and maintained ~30** SOAP stubs on Java (**Apache Axis2** / Tomcat) to isolate LT from real adjacent bank systems.
+- **Identified** HornetQ backlog under JBoss (no stock monitoring); **built** a bash sampler to CSV; **initiated** memory-limit increase — queues stabilized after rollout.
+- **Optimized** Oracle SQL via execution plans / AWR: DB latency **~−25%**, throughput **~+15%**; **monitored** JBoss JVM (GC, thread pools).
 
-**Citrix / RDP** (separate engagement): LoadRunner **RDP** (Citrix / remote desktop) load for concurrent remote sessions — channel and server-side stability under session peaks.
+**Citrix / RDP** (separate engagement): **Conducted** LoadRunner RDP / Citrix load for concurrent remote sessions and **evaluated** channel and server stability under session peaks.
 
 ---
 
@@ -218,7 +229,7 @@ IT integrator on **Alfa-Bank** projects (major private bank; very similar to **C
 
 ## Open source and writing
 
-- [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) (open source)
+- [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) (open source) — campaign analysis **~5–6 h → ~1 h**
 - **PostgreSQL at scale** — [LinkedIn](https://www.linkedin.com/pulse/how-we-found-postgresql-bottleneck-during-load-testing-kaliaev-rbr2e/)
 - **NGINX + JMeter** — [LinkedIn](https://www.linkedin.com/pulse/why-we-started-using-nginx-load-testing-jmeter-george-kalyaev-ump7e/)
 - **Load generator OS tuning** (`limits.conf` / `sysctl`) — [LinkedIn](https://www.linkedin.com/pulse/when-bottleneck-load-generator-limitsconf-sysctl-georgii-kaliaev-mnoye/)

@@ -23,7 +23,7 @@ My focus is **performance engineering end-to-end**: workload modelling and **NFR
 
 At **IBS** I **led a load-testing team of ~5 engineers** (Team Player 2023, Project Driver 2022) on embedded engagements — e.g. **~4 000** SAP users and **~500+** defects off the prod path (Sberbank), Treasury **~45k ops/h**, grocery night LT **+189%** (**0** incidents) vs **434k orders/day** peak plan, exchange **~10k WebSocket msg/s**, Guidewire **~165k ops/h**.
 
-Currently at **First Asset Management** (Russian asset management; very similar to **Vanguard**) as **Principal Development Engineer (load testing)**: **introduced Kangal + JMeter on Kubernetes**, **load-tested 15+ REST microservices** in release cycles (on-demand injectors, worker scaling, teardown — **no idle load hardware between campaigns**), **PostgreSQL capacity planning** (100M+ rows), and internal **Python** tooling in **GitLab CI**.
+Currently at **First Asset Management** (Russian asset management; very similar to **Vanguard**) as **Principal Development Engineer (load testing)**: **introduced Kangal + JMeter on Kubernetes**, **load-tested 15+ REST microservices** in release cycles (on-demand injectors, worker scaling, teardown — **no idle load hardware between campaigns**), **PostgreSQL capacity planning** (100M+ rows), **reduced total CPU by 100+ vCPU** via performance tuning, and internal **Python** tooling in **GitLab CI**.
 
 ---
 
@@ -39,6 +39,7 @@ Asset management firm (funds / portfolios) - internal product platform, not clie
 |------|---------|
 | **PostgreSQL / capacity** | Growth / INSERT path on core domain tables: 5 growth models (0→100M+ rows, **~19 GB / ~12 GB indexes**). **~90%** forecast accuracy. **INSERT ~2.7 s → 22–77 s** (up to **8.3×**). SLA risk **~11 months**. Partitioning + indexes - **INSERT 20–70 s → ≤1 s** (to **2B** rows). Capacity horizon **~11 months → ~30 years** - [case write-up](https://www.linkedin.com/pulse/how-we-found-postgresql-bottleneck-during-load-testing-kaliaev-rbr2e/) |
 | **K8s / Kangal** | Release-cycle LT for internal microservices: introduced Kangal + JMeter as the **default LT platform**. **15+** REST services - on-demand injectors, worker scaling, teardown. **No idle LT hardware** between campaigns |
+| **CPU / tuning** | Reduced total CPU consumption by **100+ vCPU** through performance tuning (service/JVM/infra recommendations from LT findings) |
 | **Tooling** | On own initiative [jmeter-load-profile-checker](https://github.com/GeorgeKalyaev/jmeter-load-profile-checker) - step-profile check **~5–6 h → ~30 min** per campaign |
 | **Batch / scaling** | Async / batch jobs vs pod scale: throughput capped by **1 min cron**, not pod count (1 vs 3 pods - no gain). Kafka lag not the bottleneck. Recommended event-driven / worker pool |
 
@@ -70,9 +71,10 @@ At that time ScriptMaster delivered **Alfa-Bank projects only**. Two engagements
 
 - Design realistic load models and **load test methodology / NFR** from business traffic and production signals
 - Build and maintain performance frameworks (**JMeter**, **Gatling**, **LoadRunner**, **k6**); **Kangal** on **Kubernetes** (on-demand injectors, scaling, teardown — no idle load hardware between runs); tune load-generator hosts (`limits.conf` / `sysctl`) so the injector is not the bottleneck
+- Optimize and extend **JMX / VuGen / Gatling** scenarios with **Groovy, Bash, Redis and REST API** — shorter test prep time and more realistic synthetic flow
 - Run load, stress, soak, and **capacity** tests; **regression** performance in release cycles
 - Correlate **Grafana / Prometheus / ELK / APM** with test windows; **RCA** across app, JVM, DB, **Kafka**, K8s
-- **Capacity planning** and SLA forecasting for data growth (PostgreSQL at scale)
+- **Capacity planning** and SLA forecasting for data growth (PostgreSQL at scale); drive infra/app tuning that cuts wasted capacity (**100+ vCPU** saved on current product platform)
 - **Lead and mentor** performance engineers (**team of ~5** at IBS); technical interviews and hiring
 - Deliver clear, actionable recommendations to engineering, DevOps, and stakeholders
 

@@ -23,7 +23,7 @@ I design workload models and **NFRs** (p95/p99, throughput), **conduct** test ca
 
 At **IBS** I **led** a load-testing team of **~5 engineers** (Team Player 2023, Project Driver 2022) — e.g. **identified and closed ~500+** SAP defects before prod (**~4 000** users), **agreed** Treasury LTM **~45k ops/h**, **ran** grocery night LT **+189%** with **0** incidents, **validated** exchange **~10k WebSocket msg/s**, **validated** Guidewire **~165k ops/h**.
 
-Currently at **First Asset Management** (АО УК «Первая»; similar to **Vanguard**) as **Principal Development Engineer (load testing)**: **introduced** Kangal + JMeter on Kubernetes, **load-tested 15+** REST microservices (on-demand injectors, scaling, teardown — **no idle load hardware**), **built** PostgreSQL capacity models (100M+ rows), **reduced** total CPU by **100+ vCPU**, and **developed** internal **Python** tooling in **GitLab CI**.
+Currently at **First Asset Management** (similar to **Vanguard**) as **Principal Development Engineer (load testing)**: **introduced** Kangal + JMeter on Kubernetes, **load-tested 15+** REST microservices (on-demand injectors, scaling, teardown — **no idle load hardware**), **built** PostgreSQL capacity models (100M+ rows), **reduced** total CPU by **100+ vCPU**, and **developed** internal **Python** tooling in **GitLab CI**.
 
 ---
 
@@ -45,7 +45,7 @@ Outcomes from load campaigns — **most significant cases only**. Full detail: [
 
 ### First Asset Management *(product · 2025–present)*
 
-Asset management firm (funds / portfolios) — internal product platform (АО УК «Первая» / Sber-related projects), not client consulting.
+Asset management firm (funds / portfolios) — internal product platform (Sber Group-related projects), not client consulting.
 
 | Area | Outcome |
 |------|---------|

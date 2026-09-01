@@ -41,7 +41,7 @@ Most significant outcomes only — routine issues omitted. Full detail in work e
 
 ### First Asset Management *(product · 2025–present)*
 
-Asset management firm (funds / portfolios) — internal product platform (АО УК «Первая» / Sber-related projects), not client consulting.
+Asset management firm (funds / portfolios) — internal product platform (Sber Group-related projects), not client consulting.
 
 - **Built** Kangal + JMeter on Kubernetes as the default load platform and **load-tested 15+** REST microservices with on-demand injectors, worker scaling, and teardown — **no idle load hardware** between campaigns.
 - **Reduced** total CPU consumption by **100+ vCPU** through performance tuning (service / JVM / infra recommendations from load-test findings).
@@ -70,7 +70,7 @@ At that time ScriptMaster delivered **Alfa-Bank projects only**. Two engagements
 
 ## Work experience
 
-### First Asset Management (АО УК «Первая»), *Principal Development Engineer — load testing* (Jan 2025 - Present)
+### First Asset Management, *Principal Development Engineer — load testing* (Jan 2025 - Present)
 
 Russian asset management company; very similar to **Vanguard** (mutual funds, ETFs, discretionary portfolios). In-house digital platform on microservices and **Kubernetes** (Sber-related projects).
 
